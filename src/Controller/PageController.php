@@ -10,7 +10,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class PageController extends AbstractController
 {
     /**
-     * @Route("/test")
+     * @Route("/test", methods={"GET"})
      */
     public function index(Request $request): Response
     {
