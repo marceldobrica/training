@@ -14,6 +14,6 @@ class PageController extends AbstractController
      */
     public function index(Request $request): Response
     {
-       return new Response ('Some response');
+        return new Response('Some response');
     }
 }
