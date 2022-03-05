@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -10,10 +11,18 @@ use Symfony\Component\Routing\Annotation\Route;
 class PageController extends AbstractController
 {
     /**
-     * @Route("/test", methods={"GET"})
+     * @Route("/", methods={"GET"})
      */
-    public function index(Request $request): Response
+    public function index(): Response
     {
         return new Response('Some response');
+    }
+
+    /**
+     * @Route("/cars", methods={"POST"})
+     */
+    public function cars(Request $request): Response
+    {
+        return new JsonResponse($request->getContent(), Response::HTTP_ACCEPTED, []);
     }
 }
