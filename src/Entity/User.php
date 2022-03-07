@@ -12,22 +12,17 @@ class User
 
     private Collection $roles;
 
-    private string $cnp;
+    public string $cnp = '';
 
     public string $firstName = '';
 
     public string $lastName = '';
 
-    private Collection $programs;
+    private Collection $programmes;
 
     public function getId(): int
     {
         return $this->id;
-    }
-
-    public function setId(int $id): void
-    {
-        $this->id = $id;
     }
 
     public function getPassword(): string
@@ -35,9 +30,11 @@ class User
         return $this->password;
     }
 
-    public function setPassword(string $password): void
+    public function setPassword(string $password): self
     {
         $this->password = $password;
+
+        return $this;
     }
 
     public function getRoles(): Collection
@@ -48,18 +45,6 @@ class User
     public function setRoles(Collection $roles): self
     {
         $this->roles = $roles;
-
-        return $this;
-    }
-
-    public function getCnp(): string
-    {
-        return $this->cnp;
-    }
-
-    public function setCnp(string $cnp): self
-    {
-        $this->cnp = $cnp;
 
         return $this;
     }

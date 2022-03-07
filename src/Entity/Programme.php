@@ -18,9 +18,9 @@ class Programme
 
     private Room $room;
 
-    private ?Collection $customers;
+    private Collection $customers;
 
-    public bool $isOnline;
+    public bool $isOnline = false;
 
     public function getId(): int
     {
@@ -56,7 +56,7 @@ class Programme
         return $this->trainer;
     }
 
-    public function setTrainer(User $trainer): self
+    public function setTrainer(?User $trainer): self
     {
         $this->trainer = $trainer;
 
