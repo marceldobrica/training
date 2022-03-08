@@ -75,12 +75,12 @@ class Programme
         return $this;
     }
 
-    public function getCustomers(): ?Collection
+    public function getCustomers(): Collection
     {
         return $this->customers;
     }
 
-    public function setCustomers(?Collection $customers): self
+    public function setCustomers(Collection $customers): self
     {
         $this->customers = $customers;
 

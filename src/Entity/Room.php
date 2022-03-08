@@ -6,14 +6,26 @@ class Room
 {
     private int $id;
 
-    public string $name;
+    public string $name = '';
 
-    public int $capacity;
+    public int $capacity = 0;
 
-    public Building $build;
+    private Building $building;
 
     public function getId(): int
     {
         return $this->id;
+    }
+
+    public function getBuilding(): Building
+    {
+        return $this->building;
+    }
+
+    public function setBuilding(Building $building): self
+    {
+        $this->building = $building;
+
+        return $this;
     }
 }

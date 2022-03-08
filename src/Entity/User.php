@@ -51,12 +51,12 @@ class User
 
     public function getPrograms(): Collection
     {
-        return $this->programs;
+        return $this->programmes;
     }
 
-    public function setPrograms(Collection $programs): self
+    public function setPrograms(Collection $programmes): self
     {
-        $this->programs = $programs;
+        $this->programmes = $programmes;
 
         return $this;
     }
