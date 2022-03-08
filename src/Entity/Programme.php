@@ -10,6 +10,8 @@ class Programme
 
     public string $name = '';
 
+    public string $description = '';
+
     private \DateTime $startDate;
 
     private \DateTime $endDate;
