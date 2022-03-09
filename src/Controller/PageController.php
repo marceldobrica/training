@@ -45,16 +45,19 @@ class PageController
 //        $this->entityManager->flush();
 
         //I'm able to make and save a user...
-//        $customer = new User();
-//        $customer->setRoles(new ArrayCollection(['customer', 'user']));
-//        $customer->setPassword('PAROLA');
+        $customer = new User();
+        $customer->setRoles(['customer', 'user']);
+        $customer->setPassword('PAROLA');
 //        $programme = new Programme();
 //        $programme->setStartDate(new \DateTime('now'));
 //        $programme->setEndDate(new \DateTime('+2 hours'));
 //        $programme->setCustomers(new ArrayCollection([$customer]));
-//        $this->entityManager->persist($customer);
+        $this->entityManager->persist($customer);
 //        $this->entityManager->persist($programme);
-//        $this->entityManager->flush();
+        $this->entityManager->flush();
+
+        //Verify add user to programe/delete user from programe
+        //
 
         return new Response('Some response');
     }

@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Controller\Dto\UserDto;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -31,7 +32,7 @@ class User
     /**
      * @ORM\Column(type="json")
      */
-    private Collection $roles;
+    private array $roles = [];
 
     /**
      * @ORM\Column(type="string", length=13, nullable="false")
@@ -56,7 +57,6 @@ class User
     public function __construct()
     {
         $this->programmes = new ArrayCollection();
-        $this->roles = new ArrayCollection();
     }
 
     public function getId(): int
@@ -76,12 +76,12 @@ class User
         return $this;
     }
 
-    public function getRoles(): Collection
+    public function getRoles(): array
     {
         return $this->roles;
     }
 
-    public function setRoles(Collection $roles): self
+    public function setRoles(array $roles): self
     {
         $this->roles = $roles;
 
@@ -90,24 +90,25 @@ class User
 
     public function addRole(string $role): self
     {
-        if ($this->roles->contains($role)) {
-            return $this; //TODO log message already have this role....should never be here
+        $key = array_search($role, $this->roles);
+        if ($key !== false) {
+            return $this; //TODO log message you don't have this role....should never be here
         }
-        $this->roles->add($role);
+        $this->roles[] = $role;
 
         return $this;
     }
 
     public function removeRole(string $role): self
     {
-        if (!$this->roles->contains($role)) {
+        $key = array_search($role, $this->roles);
+        if ($key === false) {
             return $this; //TODO log message you don't have this role....should never be here
         }
-        $this->roles->removeElement($role);
+        unset($this->roles[$key]);
 
         return $this;
     }
-
 
     public function getProgrammes(): Collection
     {
@@ -143,5 +144,18 @@ class User
         $programme->removeCustomer($this);
 
         return $this;
+    }
+
+    public static function createFromDto(UserDto $userDto): self
+    {
+        $user = new self();
+        $user->setRoles(['customer']);
+        $user->cnp = $userDto->cnp;
+        $user->firstName = $userDto->firstName;
+        $user->lastName = $userDto->lastName;
+        $user->email = $userDto->email;
+        $user->setPassword($userDto->password);
+
+        return $user;
     }
 }
