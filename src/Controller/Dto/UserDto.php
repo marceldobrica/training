@@ -20,6 +20,8 @@ class UserDto
 
     public string $cnp;
 
+    public array $roles;
+
     public static function createFromUser(User $user): self
     {
         $dto = new self();
@@ -29,6 +31,7 @@ class UserDto
         $dto->lastName = $user->lastName;
         $dto->cnp = $user->cnp;
         $dto->email = $user->email;
+        $dto->roles = $user->getRoles();
 
         return $dto;
     }
