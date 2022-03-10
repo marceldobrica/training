@@ -6,6 +6,8 @@ use App\Controller\Dto\UserDto;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use App\Validator as MyAssert;
 
 /**
  * @ORM\Entity()
@@ -21,11 +23,13 @@ class User
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\Email
      */
     public string $email = '';
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @MyAssert\Password
      */
     private string $password;
 
@@ -35,17 +39,23 @@ class User
     private array $roles = [];
 
     /**
-     * @ORM\Column(type="string", length=13, nullable="false")
+     * @ORM\Column(type="string", columnDefinition="CHAR(13) NOT NULL")
+     * @MyAssert\Cnp
      */
     public string $cnp = '';
 
     /**
      * @ORM\Column(type="string", length=255, nullable="false")
+     * @Assert\Regex("/^[A-Z][a-z]+$/")
+     * @Assert\NotBlank
      */
     public string $firstName = '';
 
     /**
      * @ORM\Column(type="string", length=255, nullable="false")
+     * @Assert\NotBlank
+     * @Assert\Regex("/^[A-Z][a-z]+$/")
+     * @Assert\NotBlank
      */
     public string $lastName = '';
 

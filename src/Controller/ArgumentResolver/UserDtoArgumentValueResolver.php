@@ -9,7 +9,6 @@ use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
 
 class UserDtoArgumentValueResolver implements ArgumentValueResolverInterface
 {
-
     public function supports(Request $request, ArgumentMetadata $argument)
     {
         return $argument->getType() === UserDto::class;
