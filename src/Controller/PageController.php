@@ -44,21 +44,29 @@ class PageController
 //        $this->entityManager->persist($room);
 //        $this->entityManager->flush();
 
-        //I'm able to make and save a user...
-        $customer = new User();
-        $customer->setRoles(['customer', 'user']);
-        $customer->setPassword('PAROLA');
-//        $programme = new Programme();
-//        $programme->setStartDate(new \DateTime('now'));
-//        $programme->setEndDate(new \DateTime('+2 hours'));
-//        $programme->setCustomers(new ArrayCollection([$customer]));
-        $this->entityManager->persist($customer);
-//        $this->entityManager->persist($programme);
-        $this->entityManager->flush();
+//        //I'm able to make and save a user...
+//        $customer = new User();
+//        $customer->setRoles(['customer', 'user']);
+//        $customer->setPassword('PAROLA');
+////        $programme = new Programme();
+////        $programme->setStartDate(new \DateTime('now'));
+////        $programme->setEndDate(new \DateTime('+2 hours'));
+////        $programme->setCustomers(new ArrayCollection([$customer]));
+//        $this->entityManager->persist($customer);
+////        $this->entityManager->persist($programme);
+//        $this->entityManager->flush();
 
-        //Verify add user to programe/delete user from programe
-        //
-
+//        //Verify add user to programe/delete user from programe add user 7 to program 3 and delete
+//        $userRepository = $this->entityManager->getRepository(User::class);
+//        $user = $userRepository->find(7);
+//        $programmeRepository = $this->entityManager->getRepository(Programme::class);
+//        $programme = $programmeRepository->find(3);
+////        $user->addProgramme($programme);
+//
+////        $user->removeProgramme($programme);
+//        $programme->addCustomer($user);
+//        $this->entityManager->persist($user);
+//        $this->entityManager->flush();
         return new Response('Some response');
     }
 

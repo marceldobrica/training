@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use App\Controller\Dto\ProgrammeDto;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -59,6 +61,11 @@ class Programme
      * @ORM\Column(type="boolean")
      */
     public bool $isOnline = false;
+
+    public function __construct()
+    {
+        $this->customers = new ArrayCollection();
+    }
 
     public function getId(): int
     {
@@ -147,5 +154,20 @@ class Programme
         $customer->removeProgramme($this);
 
         return $this;
+    }
+
+    public static function createFromDto(ProgrammeDto $programmeDto): self
+    {
+        $programme = new self();
+        $programme->name = $programmeDto->name;
+        $programme->description = $programmeDto->description;
+        $programme->setStartDate($programmeDto->startDate);
+        $programme->setEndDate($programmeDto->endDate);
+        $programme->setTrainer($programmeDto->trainer);
+        $programme->setRoom($programmeDto->room);
+        //$programme->setCustomers($programmeDto->customers);
+        $programme->isOnline = $programmeDto->isOnline;
+
+        return $programme;
     }
 }
