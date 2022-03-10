@@ -14,7 +14,11 @@ class CnpValidator extends ConstraintValidator
             throw new UnexpectedTypeException($constraint, Cnp::class);
         }
 
-        preg_match('/^([1-8])(\d{2})(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])(0[1-9]|[1-4]\d|5[0-2]|99)(\d{3})(\d)$/', $value, $matches);
+        preg_match(
+            '/^([1-8])(\d{2})(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])(0[1-9]|[1-4]\d|5[0-2]|99)(\d{3})(\d)$/',
+            $value,
+            $matches
+        );
 
         /*
          * Validarea unui C.N.P. constă în calcularea componentei C și compararea acesteia cu valoarea primită a
@@ -25,25 +29,27 @@ class CnpValidator extends ConstraintValidator
          * dacă restul împărțirii este mai mic de 10, acela reprezintă valoarea componentei C
          * dacă restul împărțirii este 10, valoarea componentei C este 1
          */
+        if (isset($matches[0])) {
+            $compoentaControl = "279146358279";
+            $cnpArray = array_map('intval', str_split($matches[0]));
+            $compoentaControlArray = array_map('intval', str_split($compoentaControl));
+            $controlSum = 0;
+            foreach ($compoentaControlArray as $key => $value) {
+                $controlSum += $value * $cnpArray[$key];
+            }
+            $rest = $controlSum % 11;
+            $cComponent = 0;
+            if ($rest < 10) {
+                $cComponent = $rest;
+            }
+            if ($rest == 10) {
+                $cComponent = 1;
+            }
+            if ($cComponent === intval($matches[7])) {
+                return;
+            }
+        }
 
-        $compoentaControl = "279146358279";
-        $cnpArray = array_map('intval', str_split($matches[0]));
-        $compoentaControlArray = array_map('intval', str_split($compoentaControl));
-        $controlSum = 0;
-        foreach ($compoentaControlArray as $key => $value) {
-            $controlSum += $value * $cnpArray[$key];
-        }
-        $rest = $controlSum % 11;
-        $cComponent = 0;
-        if ($rest < 10) {
-            $cComponent = $rest;
-        }
-        if ($rest == 10) {
-            $cComponent = 1;
-        }
-        if ($cComponent === intval($matches[7])) {
-            return;
-        }
         $this->context->buildViolation($constraint->message)->addViolation();
     }
 }
