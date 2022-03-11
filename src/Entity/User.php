@@ -99,8 +99,7 @@ class User
 
     public function addRole(string $role): self
     {
-        $key = array_search($role, $this->roles);
-        if ($key !== false) {
+        if (in_array($role, $this->roles)) {
             return $this; //TODO log message you don't have this role....should never be here
         }
         $this->roles[] = $role;

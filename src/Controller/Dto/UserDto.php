@@ -3,24 +3,43 @@
 namespace App\Controller\Dto;
 
 use App\Entity\User;
+use Symfony\Component\Validator\Constraints as Assert;
+use App\Validator as MyAssert;
 
 class UserDto
 {
     public int $id;
 
+    /**
+     * @Assert\NotBlank
+     * @Assert\Regex("/^[A-Z][a-z]+$/")
+     */
     public string $firstName;
 
+    /**
+     * @Assert\NotBlank
+     * @Assert\Regex("/^[A-Z][a-z]+$/")
+     */
     public string $lastName;
 
+    /**
+     * @Assert\Email
+     */
     public string $email;
 
+    /**
+     * @MyAssert\Password
+     */
     public string $password;
 
+    /**
+     * @Assert\EqualTo(propertyPath="password")
+     */
     public string $confirmedPassword;
 
     public string $cnp;
 
-    public array $roles;
+    public array $roles = [];
 
     public static function createFromUser(User $user): self
     {

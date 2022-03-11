@@ -32,6 +32,11 @@ class UserController
      */
     public function register(UserDto $userDto): Response
     {
+        $errorDto = $this->validator->validate($userDto);
+        if (count($errorDto) > 0) {
+            return $this->returnValidationErrors($errorDto);
+        }
+
         $user = User::createFromDto($userDto);
         $errors = $this->validator->validate($user);
 

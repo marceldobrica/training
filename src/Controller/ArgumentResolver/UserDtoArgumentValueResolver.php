@@ -19,11 +19,13 @@ class UserDtoArgumentValueResolver implements ArgumentValueResolverInterface
         $data = $request->getContent();
         $decodedData = json_decode($data, true);
         $userDto = new UserDto();
+
         $userDto->lastName = $decodedData['lastName'];
         $userDto->firstName = $decodedData['firstName'];
         $userDto->email = $decodedData['email'];
         $userDto->cnp = $decodedData['cnp'];
         $userDto->password = $decodedData['password'];
+        $userDto->confirmedPassword = $decodedData['confirmedPassword'];
 
         yield $userDto;
     }
