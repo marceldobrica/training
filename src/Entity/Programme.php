@@ -6,6 +6,7 @@ use App\Controller\Dto\ProgrammeDto;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity()
@@ -21,21 +22,26 @@ class Programme
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank
+     * @Assert\Regex("/^[A-Z][a-z]+$/")
      */
     public string $name = '';
 
     /**
      * @ORM\Column(type="text")
+     * @Assert\NotBlank
      */
     public string $description = '';
 
     /**
      * @ORM\Column(type="datetime")
+     * @Assert\DateTime
      */
     private \DateTime $startDate;
 
     /**
      * @ORM\Column(type="datetime")
+     * @Assert\DateTime
      */
     private \DateTime $endDate;
 
@@ -48,12 +54,14 @@ class Programme
     /**
      * @ORM\ManyToOne(targetEntity="Room")
      * @ORM\JoinColumn(name="room_id", referencedColumnName="id")
+     * @Assert\NotBlank
      */
     private Room $room;
 
     /**
      * @ORM\ManyToMany(targetEntity="User", inversedBy="programmes")
      * @ORM\JoinTable(name="programmes_customers")
+     * @Assert\Collection
      */
     private Collection $customers;
 

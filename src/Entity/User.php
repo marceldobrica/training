@@ -46,8 +46,8 @@ class User
 
     /**
      * @ORM\Column(type="string", length=255, nullable="false")
-     * @Assert\Regex("/^[A-Z][a-z]+$/")
      * @Assert\NotBlank
+     * @Assert\Regex("/^[A-Z][a-z]+$/")
      */
     public string $firstName = '';
 
@@ -55,7 +55,6 @@ class User
      * @ORM\Column(type="string", length=255, nullable="false")
      * @Assert\NotBlank
      * @Assert\Regex("/^[A-Z][a-z]+$/")
-     * @Assert\NotBlank
      */
     public string $lastName = '';
 
