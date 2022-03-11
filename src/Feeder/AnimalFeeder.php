@@ -41,4 +41,3 @@ class AnimalFeeder
         return true;
     }
 }
-
