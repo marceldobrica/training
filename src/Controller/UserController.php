@@ -36,10 +36,9 @@ class UserController
 
         if (count($errors) > 0) {
             $errorArray = [];
+
+            /* @var ConstraintViolation $error */
             foreach ($errors as $error) {
-                /**
-                 * @var ConstraintViolation $error
-                 */
                 $errorArray[$error->getPropertyPath()] = $error->getMessage();
             }
 

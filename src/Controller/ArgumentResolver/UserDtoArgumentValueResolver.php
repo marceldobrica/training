@@ -9,12 +9,12 @@ use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
 
 class UserDtoArgumentValueResolver implements ArgumentValueResolverInterface
 {
-    public function supports(Request $request, ArgumentMetadata $argument)
+    public function supports(Request $request, ArgumentMetadata $argument): bool
     {
         return $argument->getType() === UserDto::class;
     }
 
-    public function resolve(Request $request, ArgumentMetadata $argument)
+    public function resolve(Request $request, ArgumentMetadata $argument): \Generator
     {
         $data = $request->getContent();
         $decodedData = json_decode($data, true);
