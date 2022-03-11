@@ -8,17 +8,24 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\ConstraintViolation;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * @Route (path="/api/programme")
  */
 class ProgrammeController
 {
+    use ReturnValidationErrorsTrait;
+
     private EntityManagerInterface $entityManager;
 
-    public function __construct(EntityManagerInterface $entityManager)
+    private ValidatorInterface $validator;
+
+    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator)
     {
         $this->entityManager = $entityManager;
+        $this->validator = $validator;
     }
 
     /**
@@ -26,7 +33,14 @@ class ProgrammeController
      */
     public function register(ProgrammeDto $programmeDto): Response
     {
-        $programme = Programme::createFromDto($programmeDto); //never receive customers collection in request...
+        $programme = Programme::createFromDto($programmeDto);
+
+        $errors = $this->validator->validate($programme);
+
+        if (count($errors) > 0) {
+            return $this->returnValidationErrors($errors);
+        }
+
         $this->entityManager->persist($programme);
         $this->entityManager->flush();
         $this->entityManager->refresh($programme);

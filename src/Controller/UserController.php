@@ -16,6 +16,8 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  */
 class UserController
 {
+    use ReturnValidationErrorsTrait;
+
     private EntityManagerInterface $entityManager;
 
     private ValidatorInterface $validator;
@@ -35,14 +37,7 @@ class UserController
         $errors = $this->validator->validate($user);
 
         if (count($errors) > 0) {
-            $errorArray = [];
-
-            /* @var ConstraintViolation $error */
-            foreach ($errors as $error) {
-                $errorArray[$error->getPropertyPath()] = $error->getMessage();
-            }
-
-            return new JsonResponse($errorArray);
+            return $this->returnValidationErrors($errors);
         }
 
         $this->entityManager->persist($user);
