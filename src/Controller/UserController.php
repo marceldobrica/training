@@ -32,16 +32,16 @@ class UserController
      */
     public function register(UserDto $userDto): Response
     {
-        $errorDto = $this->validator->validate($userDto);
-        if (count($errorDto) > 0) {
-            return $this->returnValidationErrors($errorDto);
+        $errorsDto = $this->validator->validate($userDto);
+        if (count($errorsDto) > 0) {
+            return $this->returnValidationErrors($errorsDto);
         }
 
         $user = User::createFromDto($userDto);
-        $errors = $this->validator->validate($user);
+        $errorsUser = $this->validator->validate($user);
 
-        if (count($errors) > 0) {
-            return $this->returnValidationErrors($errors);
+        if (count($errorsUser) > 0) {
+            return $this->returnValidationErrors($errorsUser);
         }
 
         $this->entityManager->persist($user);

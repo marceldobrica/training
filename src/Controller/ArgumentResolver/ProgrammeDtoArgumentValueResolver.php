@@ -5,6 +5,7 @@ namespace App\Controller\ArgumentResolver;
 use App\Controller\Dto\ProgrammeDto;
 use App\Entity\Room;
 use App\Entity\User;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Controller\ArgumentValueResolverInterface;
@@ -40,7 +41,7 @@ class ProgrammeDtoArgumentValueResolver implements ArgumentValueResolverInterfac
         $trainer = $userRepository->find($decodedData['trainer']);
         $programeeDto->trainer = $trainer;
         $programeeDto->isOnline = $decodedData['isOnline'];
-//      $programeeDto->customers = $decodedData['customers']; //Collection ?? json ???
+        $programeeDto->customers = new ArrayCollection(); //customers are not send via api interface
 
         yield $programeeDto;
     }

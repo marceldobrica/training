@@ -23,7 +23,7 @@ class Programme
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank
-     * @Assert\Regex("/^[A-Z][a-z]+$/")
+     * @Assert\Regex("/^[A-Z]+/")
      */
     public string $name = '';
 
@@ -143,7 +143,7 @@ class Programme
     public function addCustomer(User $customer): self
     {
         if ($this->customers->contains($customer)) {
-            return $this; //TODO message to customer that he/she is already subscribed to program...
+            return $this;
         }
 
         $this->customers->add($customer);
@@ -155,7 +155,7 @@ class Programme
     public function removeCustomer(User $customer): self
     {
         if (!$this->customers->contains($customer)) {
-            return $this; //TODO message to customer that he/she is already subscribed to program...
+            return $this;
         }
 
         $this->customers->removeElement($customer);
@@ -173,7 +173,7 @@ class Programme
         $programme->setEndDate($programmeDto->endDate);
         $programme->setTrainer($programmeDto->trainer);
         $programme->setRoom($programmeDto->room);
-        //$programme->setCustomers($programmeDto->customers);
+        $programme->setCustomers($programmeDto->customers);
         $programme->isOnline = $programmeDto->isOnline;
 
         return $programme;

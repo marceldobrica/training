@@ -33,7 +33,7 @@ class UserDto
     public string $password;
 
     /**
-     * @Assert\EqualTo(propertyPath="password")
+     * @Assert\IdenticalTo(propertyPath="password", message="Entered passwords are not identical")
      */
     public string $confirmedPassword;
 
