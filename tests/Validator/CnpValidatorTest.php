@@ -27,9 +27,9 @@ class CnpValidatorTest extends ConstraintValidatorTestCase
     public function provideCnp(): array
     {
         return [
-            [ '0', false],
-            [ '101', false],
-            [ '1660713034972', true],
+            ['0', false],
+            ['101', false],
+            ['1660713034972', true],
         ];
     }
 
@@ -50,6 +50,24 @@ class CnpValidatorTest extends ConstraintValidatorTestCase
     {
         $cnp = '1660713034972';
         $this->validator->validate($cnp, new Cnp());
+        $this->assertNoViolation();
+    }
+
+    public function testNullCnp(): void
+    {
+        $this->validator->validate(null, new Cnp());
+        $this->buildViolation('This is not a valid CNP')->assertRaised();
+    }
+
+    public function testBlankCnp(): void
+    {
+        $this->validator->validate('', new Cnp());
+        $this->buildViolation('This is not a valid CNP')->assertRaised();
+    }
+
+    public function testValidNumberCnp(): void
+    {
+        $this->validator->validate(1660713034972, new Cnp());
         $this->assertNoViolation();
     }
 }
