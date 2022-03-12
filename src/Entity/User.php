@@ -100,7 +100,7 @@ class User
     public function addRole(string $role): self
     {
         if (in_array($role, $this->roles)) {
-            return $this; //TODO log message you don't have this role....should never be here
+            return $this;
         }
         $this->roles[] = $role;
 
@@ -111,7 +111,7 @@ class User
     {
         $key = array_search($role, $this->roles);
         if ($key === false) {
-            return $this; //TODO log message you don't have this role....should never be here
+            return $this;
         }
         unset($this->roles[$key]);
 
@@ -133,7 +133,7 @@ class User
     public function addProgramme(Programme $programme): self
     {
         if ($this->programmes->contains($programme)) {
-            return $this; //TODO ... send message from User or from Programme...not from both
+            return $this;
         }
 
         $this->programmes->add($programme);
@@ -145,7 +145,7 @@ class User
     public function removeProgramme(Programme $programme): self
     {
         if (!$this->programmes->contains($programme)) {
-            return $this; //TODO ... send message from User or from Programme...not from both
+            return $this;
         }
 
         $this->programmes->removeElement($programme);
