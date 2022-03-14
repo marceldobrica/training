@@ -23,7 +23,7 @@ class Programme
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank
-     * @Assert\Regex("/^[A-Z]+/")
+     * @Assert\Regex("/^[A-Z]+/") //todo unicode
      */
     public string $name = '';
 
