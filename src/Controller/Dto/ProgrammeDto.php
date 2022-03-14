@@ -33,7 +33,7 @@ class ProgrammeDto
      */
     public \DateTime $endDate;
 
-    public ?User $trainer;
+    public ?int $trainer_id;
 
     /**
      * @Assert\NotBlank

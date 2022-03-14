@@ -16,7 +16,6 @@ class UserDtoArgumentValueResolverTest extends TestCase
 
     public function setUp(): void
     {
-        parent::setUp();
         $this->userDtoArgumentValueResolver = new UserDtoArgumentValueResolver();
     }
 

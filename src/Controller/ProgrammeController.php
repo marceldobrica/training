@@ -34,11 +34,11 @@ class ProgrammeController
     {
         $programme = Programme::createFromDto($programmeDto);
 
-        $errors = $this->validator->validate($programme);
-
-        if (count($errors) > 0) {
-            return $this->returnValidationErrors($errors);
-        }
+//        $errors = $this->validator->validate($programme);
+//
+//        if (count($errors) > 0) {
+//            return $this->returnValidationErrors($errors);
+//        }
 
         $this->entityManager->persist($programme);
         $this->entityManager->flush();

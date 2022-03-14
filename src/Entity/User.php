@@ -31,7 +31,7 @@ class User
      * @ORM\Column(type="string", length=255)
      * @MyAssert\Password
      */
-    private string $password;
+    private string $password = '';
 
     /**
      * @ORM\Column(type="json")
