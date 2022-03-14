@@ -16,7 +16,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class CreateAccountCommand extends Command
 {
-    protected static $defaultName = 'app:create-account';
+    protected static $defaultName = 'app:create-user';
 
     protected static $defaultDescription = 'Add user account';
 
