@@ -13,6 +13,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class CreateUserCommand extends Command
 {
@@ -24,9 +25,13 @@ class CreateUserCommand extends Command
 
     private EntityManagerInterface $entityManager;
 
-    public function __construct(EntityManagerInterface $entityManager)
+    private ValidatorInterface $validator;
+
+    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator)
     {
         $this->entityManager = $entityManager;
+        $this->validator = $validator;
+
         parent::__construct();
     }
 
@@ -48,6 +53,15 @@ class CreateUserCommand extends Command
 
     protected function interact(InputInterface $input, OutputInterface $output)
     {
+        $arguments = $input->getArguments();
+        foreach ($arguments as $key => $argument) {
+            if ($argument === null && in_array($key, ['email', 'firstName', 'lastName'])) {
+                $helper = $this->getHelper('question');
+                $question = new Question('Please enter the user\'s ' . $key . ':');
+                $input->setArgument($key, $helper->ask($input, $output, $question));
+            }
+        }
+
         $helper = $this->getHelper('question');
         $question = new Question('Please enter the user\'s password:');
         $question->setHidden(true);
@@ -71,6 +85,14 @@ class CreateUserCommand extends Command
         $user->cnp = $cnp ?: '';
         $user->setRoles($roles);
         $user->setPassword($this->plainPassword);
+
+        $errors = $this->validator->validate($user);
+        if (count($errors) > 0) {
+            foreach ($errors as $error) {
+                $io->error($error->getPropertyPath() . '-' . $error->getMessage());
+            }
+            return self::FAILURE;
+        }
 
         $this->entityManager->persist($user);
         $this->entityManager->flush();
