@@ -27,10 +27,6 @@ class ProgrammeDtoArgumentValueResolverTest extends TestCase
     public function setUp(): void
     {
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
-//        $this->entityManager->method('getRepositiory')
-//        $this->entityManager->expects($this->any())
-//            ->method('getRepository', Room::class)
-//            ->willReturn(new Room());
         $this->programmeDtoArgumentValueResolver = new ProgrammeDtoArgumentValueResolver($this->entityManager);
     }
 
@@ -43,44 +39,4 @@ class ProgrammeDtoArgumentValueResolverTest extends TestCase
         self::assertNotFalse($result);
     }
 
-//    public function testResolveArgument()
-//    {
-//        $request = Request::create(
-//            '/test',
-//            'POST',
-//            [],
-//            [],
-//            [],
-//            [],
-//            json_encode([
-//                'name' => 'Name',
-//                'description' => 'description',
-//                'startDate' => '15.05.2022 10:00',
-//                'endDate' => '15.05.2022 11:00',
-//                'trainer' => '1',
-//                'room' => '1',
-//                "isOnline" => '1'
-//            ])
-//        );
-//
-//        $argumentMetadata = new ArgumentMetadata('test', ProgrammeDto::class, true, false, new ProgrammeDto());
-//        $dto = $this->programmeDtoArgumentValueResolver->resolve($request, $argumentMetadata)->current();
-//
-//        $programeeDto = new ProgrammeDto();
-//        $programeeDto->name = 'Name';
-//        $programeeDto->description = 'description';
-//        $programeeDto->startDate = new \DateTime('15.05.2022 10:00');
-//        $programeeDto->endDate = new \DateTime('15.05.2022 11:00');
-//        $roomRepository = $this->entityManager->getRepository(Room::class);
-//        $room = $roomRepository->find(1);
-//        $programeeDto->room = $room;
-//        $userRepository = $this->entityManager->getRepository(User::class);
-//        $trainer = $userRepository->find(1);
-//        $programeeDto->trainer = $trainer;
-//        $programeeDto->isOnline = true;
-//        $programeeDto->customers = new ArrayCollection(); //customers are
-//
-//        self::assertIsIterable($this->programmeDtoArgumentValueResolver->resolve($request, $argumentMetadata));
-//        //self::assertEquals($programmeDto, $dto);
-//    }
 }
