@@ -4,7 +4,6 @@ namespace App\Controller\Dto;
 
 use App\Entity\Programme;
 use App\Entity\Room;
-use App\Entity\User;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -51,9 +50,9 @@ class ProgrammeDto
         $dto->description = $programme->description;
         $dto->startDate = $programme->getStartDate();
         $dto->endDate = $programme->getEndDate();
-        $dto->trainer = $programme->getTrainer();
+        $dto->trainer_id = $programme->getTrainer()->getId();
         $dto->room = $programme->getRoom();
-        $dto->customers = $programme->getCustomers();
+//        $dto->customers = $programme->getCustomers();
         $dto->isOnline = $programme->isOnline;
 
         return $dto;
