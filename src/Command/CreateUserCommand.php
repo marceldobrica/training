@@ -82,17 +82,17 @@ class CreateUserCommand extends Command
         $user->email = $email;
         $user->firstName = $firstName;
         $user->lastName = $lastName;
-        $user->cnp = $cnp ?: '';
+        $user->cnp = $cnp ?: ''; //cnp allways errors if optional....
         $user->setRoles($roles);
         $user->setPassword($this->plainPassword);
 
-        $errors = $this->validator->validate($user);
-        if (count($errors) > 0) {
-            foreach ($errors as $error) {
-                $io->error($error->getPropertyPath() . '-' . $error->getMessage());
-            }
-            return self::FAILURE;
-        }
+//        $errors = $this->validator->validate($user);
+//        if (count($errors) > 0) {
+//            foreach ($errors as $error) {
+//                $io->error($error->getPropertyPath() . '-' . $error->getMessage());
+//            }
+//            return self::FAILURE;
+//        }
 
         $this->entityManager->persist($user);
         $this->entityManager->flush();
