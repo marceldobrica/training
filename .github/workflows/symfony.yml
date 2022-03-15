@@ -37,3 +37,5 @@ jobs:
       env:
         DATABASE_URL: sqlite:///%kernel.project_dir%/data/database.sqlite
       run: vendor/bin/phpunit
+    - name: Execute CodeSniffer tests
+      run: vendor/bin/phpcs --standard=PSR12 --ignore=tests/bootstrap.php src tests
