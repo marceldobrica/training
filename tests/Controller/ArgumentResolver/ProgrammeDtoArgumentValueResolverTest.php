@@ -38,5 +38,4 @@ class ProgrammeDtoArgumentValueResolverTest extends TestCase
 
         self::assertNotFalse($result);
     }
-
 }
