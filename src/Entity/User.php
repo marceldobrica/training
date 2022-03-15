@@ -14,6 +14,12 @@ use App\Validator as MyAssert;
  */
 class User
 {
+    public const ROLE_USER = 'ROLE_USER';
+    public const ROLE_TRAINER = 'ROLE_TRAINER';
+    public const ROLE_ADMIN = 'ROLE_ADMIN';
+
+    public const ROLES = ['ROLE_USER', 'ROLE_TRAINER', 'ROLE_ADMIN'];
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -35,6 +41,7 @@ class User
 
     /**
      * @ORM\Column(type="json")
+     * @Assert\Choice(choices=User::ROLES, multiple=true)
      */
     private array $roles = [];
 
