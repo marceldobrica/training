@@ -39,3 +39,5 @@ jobs:
       run: vendor/bin/phpunit
     - name: Execute CodeSniffer tests
       run: vendor/bin/phpcs --standard=PSR12 --ignore=tests/bootstrap.php src tests
+    - name: Execute PhpStan tests
+      run: vendor/bin/phpstan analyse src tests
