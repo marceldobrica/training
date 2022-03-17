@@ -82,7 +82,7 @@ class ProgrammeImportCsv extends Command
         try {
             $readHandler = fopen($inputFile, 'r');
             $writeHandler = fopen($outputFile, 'w');
-            $this->handleReadResources($readHandler);
+            $this->handleResources($readHandler, $writeHandler);
         } catch (InvalidCSVHeaderException $e) {
             $io->error($e->getMessage());
             $error = true;
@@ -102,7 +102,7 @@ class ProgrammeImportCsv extends Command
         }
 
         $message = sprintf('Successfully imported %d programmes and failed to import %d programmes.
-            The generated csv file for error rows is %s', [$this->correctRows, $this->wrongRows, $outputFile]);
+            The generated csv file for error rows is %s', $this->correctRows, $this->wrongRows, $outputFile);
         $io->success($message);
 
         return self::SUCCESS;
@@ -110,9 +110,10 @@ class ProgrammeImportCsv extends Command
 
     /**
      * @param false|resource $readHandler
+     * @param false|resource $writeHandler
      * @throws InvalidCSVHeaderException
      */
-    private function handleReadResources($readHandler): string
+    private function handleResources($readHandler, $writeHandler): string
     {
         $receivedHeader = fgets($readHandler);
         if ($receivedHeader !== 'Name|Description|Start date|End date|Online') {
@@ -124,7 +125,7 @@ class ProgrammeImportCsv extends Command
                 $this->writeToDatabase($receivedRow);
                 $this->correctRows++;
             } else {
-                $this->writeToErrorCSV($receivedRow);
+                $this->writeToErrorCSV($receivedRow, $writeHandler);
                 $this->wrongRows++;
             }
         }
@@ -180,5 +181,13 @@ class ProgrammeImportCsv extends Command
 
         $this->entityManager->persist($programme);
         $this->entityManager->flush();
+    }
+
+    /**
+     * @param false|resource $writeHandler
+     */
+    public function writeToErrorCSV(array $row, $writeHandler): void
+    {
+        echo 'to do';
     }
 }
