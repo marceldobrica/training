@@ -3,8 +3,6 @@
 namespace App\Controller\Dto;
 
 use App\Entity\Programme;
-use App\Entity\Room;
-use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class ProgrammeDto
@@ -13,14 +11,11 @@ class ProgrammeDto
 
     /**
      * @Assert\NotBlank
-     * @Assert\Regex("/^[A-Z]+/")
+     * @Assert\Regex("'/^[\p{Lu}].+/'")
      */
     public string $name;
 
-    /**
-     * @Assert\NotBlank
-     */
-    public string $description;
+    public ?string $description;
 
     /**
      * @Assert\DateTime
@@ -32,15 +27,6 @@ class ProgrammeDto
      */
     public \DateTime $endDate;
 
-    public ?int $trainer_id;
-
-    /**
-     * @Assert\NotBlank
-     */
-    public Room $room;
-
-    public Collection $customers;
-
     public bool $isOnline;
 
     public static function createFromProgramme(Programme $programme): self
@@ -50,9 +36,6 @@ class ProgrammeDto
         $dto->description = $programme->description;
         $dto->startDate = $programme->getStartDate();
         $dto->endDate = $programme->getEndDate();
-        $dto->trainer_id = $programme->getTrainer()->getId();
-        $dto->room = $programme->getRoom();
-//        $dto->customers = $programme->getCustomers();
         $dto->isOnline = $programme->isOnline;
 
         return $dto;

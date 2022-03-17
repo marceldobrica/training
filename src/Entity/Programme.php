@@ -23,15 +23,14 @@ class Programme
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank
-     * @Assert\Regex("/^[A-Z]+/") //todo unicode
+     * @Assert\Regex("'/^[\p{Lu}].+/'")
      */
     public string $name = '';
 
     /**
-     * @ORM\Column(type="text")
-     * @Assert\NotBlank
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
-    public string $description = '';
+    public ?string $description;
 
     /**
      * @ORM\Column(type="datetime")
@@ -47,16 +46,15 @@ class Programme
 
     /**
      * @ORM\ManyToOne(targetEntity="User")
-     * @ORM\JoinColumn(name="trainer_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="trainer_id", referencedColumnName="id", nullable=true)
      */
     private ?User $trainer;
 
     /**
      * @ORM\ManyToOne(targetEntity="Room")
-     * @ORM\JoinColumn(name="room_id", referencedColumnName="id")
-     * @Assert\NotBlank
+     * @ORM\JoinColumn(name="room_id", referencedColumnName="id", nullable=true)
      */
-    private Room $room;
+    private ?Room $room;
 
     /**
      * @ORM\ManyToMany(targetEntity="User", inversedBy="programmes")
@@ -116,7 +114,7 @@ class Programme
         return $this;
     }
 
-    public function getRoom(): Room
+    public function getRoom(): ?Room
     {
         return $this->room;
     }
@@ -171,9 +169,6 @@ class Programme
         $programme->description = $programmeDto->description;
         $programme->setStartDate($programmeDto->startDate);
         $programme->setEndDate($programmeDto->endDate);
-        $programme->setTrainer($programmeDto->trainer);
-        $programme->setRoom($programmeDto->room);
-        $programme->setCustomers($programmeDto->customers);
         $programme->isOnline = $programmeDto->isOnline;
 
         return $programme;

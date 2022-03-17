@@ -32,10 +32,15 @@ class ProgrammeController
      */
     public function register(ProgrammeDto $programmeDto): Response
     {
-        $programme = Programme::createFromDto($programmeDto);
+        $errors = $this->validator->validate($programmeDto);
 
-//        $errors = $this->validator->validate($programme);
-//
+//        if (count($errors) > 0) {
+//            return $this->returnValidationErrors($errors);
+//        }
+
+        $programme = Programme::createFromDto($programmeDto);
+        $errors = $this->validator->validate($programme);
+
 //        if (count($errors) > 0) {
 //            return $this->returnValidationErrors($errors);
 //        }

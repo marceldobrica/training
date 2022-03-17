@@ -3,9 +3,6 @@
 namespace App\Controller\ArgumentResolver;
 
 use App\Controller\Dto\ProgrammeDto;
-use App\Entity\Room;
-use App\Entity\User;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Controller\ArgumentValueResolverInterface;
@@ -29,20 +26,13 @@ class ProgrammeDtoArgumentValueResolver implements ArgumentValueResolverInterfac
     {
         $data = $request->getContent();
         $decodedData = json_decode($data, true);
-        $programeeDto = new ProgrammeDto();
-        $programeeDto->name = $decodedData['name'];
-        $programeeDto->description = $decodedData['description'];
-        $programeeDto->startDate = new \DateTime($decodedData['startDate']);
-        $programeeDto->endDate = new \DateTime($decodedData['endDate']);
-        $roomRepository = $this->entityManager->getRepository(Room::class);
-        $room = $roomRepository->find($decodedData['room']);
-        $programeeDto->room = $room;
-        $userRepository = $this->entityManager->getRepository(User::class);
-        $trainer = $userRepository->find($decodedData['trainer']);
-        $programeeDto->trainer = $trainer;
-        $programeeDto->isOnline = $decodedData['isOnline'];
-        $programeeDto->customers = new ArrayCollection(); //customers are not send via api interface
+        $programmeDto = new ProgrammeDto();
+        $programmeDto->name = $decodedData['name'];
+        $programmeDto->description = $decodedData['description'];
+        $programmeDto->startDate = new \DateTime($decodedData['startDate']);
+        $programmeDto->endDate = new \DateTime($decodedData['endDate']);
+        $programmeDto->isOnline = $decodedData['isOnline'];
 
-        yield $programeeDto;
+        yield $programmeDto;
     }
 }

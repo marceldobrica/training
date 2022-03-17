@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Controller\Dto\ProgrammeDto;
 use App\Entity\Building;
 use App\Entity\Room;
 use App\Entity\User;
@@ -15,6 +16,8 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class PageController
 {
+    use ReturnValidationErrorsTrait;
+
     private EntityManagerInterface $entityManager;
 
     public function __construct(EntityManagerInterface $entityManager)
@@ -67,6 +70,17 @@ class PageController
 //        $programme->addCustomer($user);
 //        $this->entityManager->persist($user);
 //        $this->entityManager->flush();
+
+        $programeDto = new ProgrammeDto();
+        $programeDto->name = "Yoga avansati";
+        $programeDto->description = "Cel mai avansat curs de yoga de pe piata";
+        $programeDto->isOnline = true;
+        $programeDto->startDate = new \DateTime("15.05.2022 10:00");
+        $programeDto->endDate = new \DateTime("15.05.2022 11:00");
+
+
+
+
         return new Response('Some response');
     }
 
