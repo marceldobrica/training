@@ -17,6 +17,11 @@ framework:
     php_errors:
         log: true
 
+    # config/packages/framework.yaml
+    http_client:
+        default_options:
+            max_redirects: 3
+
 when@test:
     framework:
         test: true
