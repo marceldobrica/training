@@ -6,6 +6,7 @@ namespace App\Command;
 
 use App\Decrypters\CaesarDecrypter;
 use App\HttpClient\HttpClientImportPogramme;
+use App\Repository\ProgrammeRepository;
 use App\SaveEntities\SaveProgramme;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -23,30 +24,35 @@ class ImportProgrammeFromUrlCommand extends Command
 
     private SaveProgramme $saveProgramme;
 
+    private ProgrammeRepository $programmeRepository;
+
     public function __construct(
         HttpClientImportPogramme $client,
         CaesarDecrypter $decrypter,
-        SaveProgramme $saveProgramme
+        SaveProgramme $saveProgramme,
+        ProgrammeRepository $programmeRepository
     ) {
         $this->client = $client;
         $this->decrypter = $decrypter;
         $this->saveProgramme = $saveProgramme;
+        $this->programmeRepository = $programmeRepository;
 
         parent::__construct();
     }
 
-
     public function execute(InputInterface $input, OutputInterface $output): int
     {
+        $rawData = $this->client->fetchData();
 
-        $rowdata = $this->client->fetchData();
+        $vector = $this->programmeRepository->findOcupiedRooms(
+            \DateTime::createFromFormat('d.m.Y H:i', '15.03.2022'),
+            \DateTime::createFromFormat('d.m.Y H:i', '15.03.2022')
+        );
 
-        foreach ($rowdata as $encryptedArray) {
-            $programmeArray = $this->decrypter->decryptProgrammeArray($encryptedArray);
-            $allLines[] = $programmeArray;
-        }
-
-        $output->write(print_r($allLines));
+//        foreach ($rawData as $encryptedArray) {
+//            $programmeArray = $this->decrypter->decryptProgrammeArray($encryptedArray);
+//            $this->saveProgramme->saveProgrammeFromArray($programmeArray);
+//        }
 
         return self::SUCCESS;
     }

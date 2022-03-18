@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Controller\Dto\RoomDto;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -47,5 +48,15 @@ class Room
         $this->building = $building;
 
         return $this;
+    }
+
+    public static function createFromDto(RoomDto $roomDto): self
+    {
+        $room = new self();
+        $room->name = $roomDto->name;
+        $room->capacity = $roomDto->capacity;
+        $room->setBuilding($roomDto->building);
+
+        return $room;
     }
 }

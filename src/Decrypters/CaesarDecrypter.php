@@ -38,11 +38,10 @@ class CaesarDecrypter
         $decrypted = [];
         $decrypted['name'] = $this->decipher($encryptedArray['name'], 8);
         $decrypted['description'] = $this->decipher($encryptedArray['description'], 8);
-        $decrypted['location'] = $this->decipher($encryptedArray['location'], 8);
         $decrypted['startDate'] = $encryptedArray['startDate'];
         $decrypted['endDate'] = $encryptedArray['endDate'];
         $decrypted['isOnline'] = $encryptedArray['isOnline'] ?: false;
-        $decrypted['capacity'] = $encryptedArray['capacity'];
+        $decrypted['maxParticipants'] = $encryptedArray['maxParticipants'];
 
         return $decrypted;
     }

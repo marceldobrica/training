@@ -2,19 +2,23 @@
 
 namespace App\Controller;
 
-use App\Controller\Dto\ProgrammeDto;
-use App\Entity\Programme;
+use App\Controller\Dto\BuildingDto;
+use App\Entity\Building;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
- * @Route (path="/api/programme")
+ * @Route (path="/api/building")
  */
-class ProgrammeController
+class BuildingController implements LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
     use ReturnValidationErrorsTrait;
 
     private EntityManagerInterface $entityManager;
@@ -30,21 +34,23 @@ class ProgrammeController
     /**
      * @Route(methods={"POST"})
      */
-    public function register(ProgrammeDto $programmeDto): Response
+    public function register(BuildingDto $buildingDto): Response
     {
-        $programme = Programme::createFromDto($programmeDto);
+        $building = Building::createFromDto($buildingDto);
 
-        $errors = $this->validator->validate($programme);
-
+        $errors = $this->validator->validate($building);
         if (count($errors) > 0) {
             return $this->returnValidationErrors($errors);
         }
 
-        $this->entityManager->persist($programme);
+        $this->entityManager->persist($building);
         $this->entityManager->flush();
-        $this->entityManager->refresh($programme);
-        $savedProgrammeDto = ProgrammeDto::createFromProgramme($programme);
+        $this->entityManager->refresh($building);
 
-        return new JsonResponse($savedProgrammeDto, Response::HTTP_CREATED);
+        $newBuildingDto = BuildingDto::createFromBuilding($building);
+
+        $this->logger->info('A Building was registered and saved in DB');
+
+        return new JsonResponse($newBuildingDto, Response::HTTP_CREATED);
     }
 }

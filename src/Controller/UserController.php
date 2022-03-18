@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Controller\Dto\UserDto;
 use App\Entity\User;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
@@ -25,10 +26,16 @@ class UserController implements LoggerAwareInterface
 
     private ValidatorInterface $validator;
 
-    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator)
-    {
+    private UserRepository $userRepository;
+
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        ValidatorInterface $validator,
+        UserRepository $userRepository
+    ) {
         $this->entityManager = $entityManager;
         $this->validator = $validator;
+        $this->userRepository = $userRepository;
     }
 
     /**
@@ -61,4 +68,40 @@ class UserController implements LoggerAwareInterface
 
         return new JsonResponse($savedUserDto, Response::HTTP_CREATED);
     }
+
+//    /**
+//     * @Route(path="/{id}" methods={"DELETE"})
+//     */
+//    public function delete($id): Response
+//    {
+//        $user = $this->userRepository->findUserById($id);
+//
+//        if ($user) {
+//            $this->userRepository->remove($user);
+//            $this->logger->info('An user was deleted and removed from DB');
+//            return new JsonResponse();
+//        }
+//
+//        $savedUserDto = UserDto::createFromUser($user);
+//
+//        return new JsonResponse($savedUserDto, Response::HTTP_CREATED);
+//    }
+//
+//    /**
+//     * @Route(path="/{id}" methods={"PUT"})
+//     */
+//    public function update($id): Response
+//    {
+//        $user = $this->userRepository->findUserById($id);
+//
+//        if ($user) {
+//            $this->userRepository->remove($user);
+//            $this->logger->info('An user was deleted and removed from DB');
+//            return new JsonResponse();
+//        }
+//
+//        $savedUserDto = UserDto::createFromUser($user);
+//
+//        return new JsonResponse($savedUserDto, Response::HTTP_CREATED);
+//    }
 }
