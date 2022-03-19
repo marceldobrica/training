@@ -85,10 +85,6 @@ class BuildProgrammeFromArray implements LoggerAwareInterface
 
         $ocupiedRoomsId = $query->getResult();
 
-        if ($isOnline) {
-            $a = 'b';
-        }
-
         $occupiedForQuery = $this->getOcupiedForQuery($ocupiedRoomsId);
 
         $dqlOnline = "SELECT r FROM App\Entity\Room r LEFT JOIN r.building b " .
