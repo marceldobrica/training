@@ -117,8 +117,3 @@ class BuildProgrammeFromArray implements LoggerAwareInterface
         return implode(',', $notAvailable);
     }
 }
-
-/*
- * SELECT DISTINCT r0_.id AS id_0 FROM programme p1_ LEFT JOIN room r0_ ON p1_.room_id = r0_.id WHERE ((p1_.start_date <= '2022-05-12T10:00:00+03:00' AND '2022-05-12T10:00:00+03:00' < p1_.end_date) OR (p1_.start_date < "2022-05-12T15:00:00+03:00" AND "2022-05-12T15:00:00+03:00" <= p1_.end_date)) AND p1_.is_online = false
- * SELECT * FROM programme WHERE ((start_date <= '2022-05-11T10:00:00+03:00' AND '2022-05-11T10:00:00+03:00' < end_date) OR (start_date < "2022-05-11T15:00:00+03:00" AND "2022-05-11T15:00:00+03:00" <= end_date)) AND is_online = false
- */
