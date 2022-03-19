@@ -103,13 +103,13 @@ class BuildProgrammeFromArray implements LoggerAwareInterface
         return array_shift($availableRooms);
     }
 
-    private function getOcupiedForQuery(array $ocupiedRoomsId): string
+    private function getOcupiedForQuery(array $ocupiedRoomsId): array
     {
         $notAvailable = [];
         foreach ($ocupiedRoomsId as $item) {
             $notAvailable[] = $item['id'];
         }
 
-        return implode(',', $notAvailable);
+        return $notAvailable;
     }
 }
