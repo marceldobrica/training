@@ -2,17 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\SaveEntities;
+namespace App\Builders;
 
 use App\Entity\Programme;
 use App\Entity\Room;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
-use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class SaveProgramme implements LoggerAwareInterface
+class BuildProgrammeFromArray
 {
     use LoggerAwareTrait;
 
@@ -26,7 +25,10 @@ class SaveProgramme implements LoggerAwareInterface
         $this->validator = $validator;
     }
 
-    public function saveProgrammeFromArray(array $programmeArray): void
+    /**
+     * @throws \Exception
+     */
+    public function build(array $programmeArray): ?Programme
     {
         $programme = new Programme();
         $programme->name = $programmeArray['name'];
@@ -35,37 +37,44 @@ class SaveProgramme implements LoggerAwareInterface
         $programme->setEndDate(\DateTime::createFromFormat('d.m.Y H:i', $programmeArray['endDate']));
         $programme->isOnline = $programmeArray['isOnline'];
         $programme->maxParticipants = $programmeArray['maxParticipants'];
-        $programme->setTrainer($this->resolveTrainer(null));
-        if ($this->resolveRoom()) {
-            $programme->setRoom($this->resolveRoom());
-        } else {
-            $this->logger->warning(
-                'Not able to assign a room to programme',
-                ['program' => json_encode($programmeArray)]
-            );
+
+        $programme->setTrainer($this->getTrainerForProgram(0));
+
+        if (!$this->getRoomForProgram()) {
+            $message = 'Not able to assign a room to programme';
+            $this->logger->warning($message, ['program' => json_encode($programmeArray)]);
+
+            throw new \Exception($message);
         }
+
+        $programme->setRoom($this->getRoomForProgram());
 
         $errors = $this->validator->validate($programme);
 
         if (count($errors) > 0) {
-            $this->logger->warning(
-                'Not valid programme entry',
-                ['program' => json_encode($programmeArray)]
-            );
+            $message = 'Not valid programme entry';
+            $this->logger->warning($message, ['program' => json_encode($programmeArray)]);
+
+            throw new \Exception($message);
         }
 
-        $this->entityManager->persist($programme);
-        $this->entityManager->flush();
+        return $programme;
     }
 
-    public function getRoomForProgram(): ?Room
+    private function getRoomForProgram(): ?Room
     {
         //TODO - correct code ... return null if no room available...
+
+//        $vector = $this->programmeRepository->findOcupiedRooms(
+//            \DateTime::createFromFormat('d.m.Y H:i', '15.03.2022'),
+//            \DateTime::createFromFormat('d.m.Y H:i', '15.03.2022')
+//        );
+
         return $this->entityManager->getRepository(Room::class)->find(1);
     }
 
-    public function getTrainerForProgram(?int $trainer_id): ?User
+    private function getTrainerForProgram(int $trainerId): ?User
     {
-        return $this->entityManager->getRepository(User::class)->find($trainer_id);
+        return $this->entityManager->getRepository(User::class)->find($trainerId);
     }
 }

@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace App\Command;
 
+use App\Builders\BuildProgrammeFromArray;
 use App\Decrypters\CaesarDecrypter;
 use App\HttpClient\HttpClientImportPogramme;
 use App\Repository\ProgrammeRepository;
-use App\SaveEntities\SaveProgramme;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 class ImportProgrammeFromUrlCommand extends Command
 {
@@ -20,39 +21,46 @@ class ImportProgrammeFromUrlCommand extends Command
 
     private HttpClientImportPogramme $client;
 
-    private CaesarDecrypter $decrypter;
+    private CaesarDecrypter $caesarDecrypter;
 
-    private SaveProgramme $saveProgramme;
+    private BuildProgrammeFromArray $buildProgrammeFromArray;
 
     private ProgrammeRepository $programmeRepository;
 
     public function __construct(
         HttpClientImportPogramme $client,
-        CaesarDecrypter $decrypter,
-        SaveProgramme $saveProgramme,
+        CaesarDecrypter $caesarDecrypter,
+        BuildProgrammeFromArray $buildProgrammeFromArray,
         ProgrammeRepository $programmeRepository
     ) {
         $this->client = $client;
-        $this->decrypter = $decrypter;
-        $this->saveProgramme = $saveProgramme;
+        $this->caesarDecrypter = $caesarDecrypter;
+        $this->buildProgrammeFromArray = $buildProgrammeFromArray;
         $this->programmeRepository = $programmeRepository;
 
         parent::__construct();
     }
 
+    /**
+     * @throws \Exception
+     */
     public function execute(InputInterface $input, OutputInterface $output): int
     {
+        $io = new SymfonyStyle($input, $output);
+
         $rawData = $this->client->fetchData();
 
-        $vector = $this->programmeRepository->findOcupiedRooms(
-            \DateTime::createFromFormat('d.m.Y H:i', '15.03.2022'),
-            \DateTime::createFromFormat('d.m.Y H:i', '15.03.2022')
-        );
+        foreach ($rawData as $encryptedArray) {
+            $programmeArray = $this->caesarDecrypter->decryptProgrammeArray($encryptedArray);
 
-//        foreach ($rawData as $encryptedArray) {
-//            $programmeArray = $this->decrypter->decryptProgrammeArray($encryptedArray);
-//            $this->saveProgramme->saveProgrammeFromArray($programmeArray);
-//        }
+            try {
+                $programme = $this->buildProgrammeFromArray->build($programmeArray);
+                $io->success('You have created the programme: ' . $programme->name);
+                $this->programmeRepository->add($programme);
+            } catch (\Exception $e) {
+                $io->error('You were not able to created the programme: ' . $programmeArray['name']);
+            }
+        }
 
         return self::SUCCESS;
     }

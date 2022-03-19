@@ -3,7 +3,6 @@
 namespace App\Controller\ArgumentResolver;
 
 use App\Controller\Dto\ProgrammeDto;
-use App\SaveEntities\SaveProgramme;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,12 +13,9 @@ class ProgrammeDtoArgumentValueResolver implements ArgumentValueResolverInterfac
 {
     private EntityManagerInterface $entityManager;
 
-    private SaveProgramme $saveProgramme;
-
-    public function __construct(EntityManagerInterface $entityManager, SaveProgramme $saveProgramme)
+    public function __construct(EntityManagerInterface $entityManager)
     {
         $this->entityManager = $entityManager;
-        $this->saveProgramme = $saveProgramme;
     }
 
     public function supports(Request $request, ArgumentMetadata $argument): bool
@@ -39,12 +35,12 @@ class ProgrammeDtoArgumentValueResolver implements ArgumentValueResolverInterfac
         $programeeDto->isOnline = $decodedData['isOnline'];
         $programeeDto->customers = new ArrayCollection();
         $programeeDto->maxParticipants = $decodedData['maxParticipants'];
-        if (isset($decodedData['trainer_id'])) {
-            $programeeDto->trainer = $this->saveProgramme->resolveTrainer($decodedData['trainer_id']);
-        } else {
-            $programeeDto->trainer = $this->saveProgramme->resolveTrainer(null);
-        }
-        $programeeDto->room = $this->saveProgramme->resolveRoom();
+//        if (isset($decodedData['trainer_id'])) {
+//            $programeeDto->trainer = $this->saveProgramme->resolveTrainer($decodedData['trainer_id']);
+//        } else {
+//            $programeeDto->trainer = $this->saveProgramme->resolveTrainer(null);
+//        }
+//        $programeeDto->room = $this->saveProgramme->resolveRoom();
 
         yield $programeeDto;
     }

@@ -31,6 +31,7 @@ class CnpValidatorTest extends ConstraintValidatorTestCase
             ['101', false],
             ['1660713034972', true],
             ['1660713034971', false],
+            ['2720628034991', true],
         ];
     }
 
