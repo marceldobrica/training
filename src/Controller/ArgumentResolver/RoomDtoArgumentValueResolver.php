@@ -35,10 +35,10 @@ class RoomDtoArgumentValueResolver implements ArgumentValueResolverInterface
         $dto = new RoomDto();
         $dto->name = $decodedData['name'];
         $dto->capacity = intval($decodedData['capacity']);
-        if (isset($decodedData['building_id'])) {
-            $dto->building = $this->buildingRepository->findOneById(1);
+
+        if (isset($decodedData['buildingId'])) {
+            $dto->building = $this->buildingRepository->findOneById($decodedData['buildingId']);
         }
-        $dto->building = $this->buildingRepository->findOneById(1);
 
         yield $dto;
     }

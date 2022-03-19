@@ -6,12 +6,12 @@ namespace App\Builders;
 
 use App\Entity\Programme;
 use App\Entity\Room;
-use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class BuildProgrammeFromArray
+class BuildProgrammeFromArray implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
@@ -33,21 +33,25 @@ class BuildProgrammeFromArray
         $programme = new Programme();
         $programme->name = $programmeArray['name'];
         $programme->description = $programmeArray['description'];
-        $programme->setStartDate(\DateTime::createFromFormat('d.m.Y H:i', $programmeArray['startDate']));
-        $programme->setEndDate(\DateTime::createFromFormat('d.m.Y H:i', $programmeArray['endDate']));
+        $startDate = \DateTime::createFromFormat('d.m.Y H:i', $programmeArray['startDate']);
+        $programme->setStartDate($startDate);
+        $endDate = \DateTime::createFromFormat('d.m.Y H:i', $programmeArray['endDate']);
+        $programme->setEndDate($endDate);
         $programme->isOnline = $programmeArray['isOnline'];
         $programme->maxParticipants = $programmeArray['maxParticipants'];
 
-        $programme->setTrainer($this->getTrainerForProgram(0));
+        $programme->setTrainer(null);
 
-        if (!$this->getRoomForProgram()) {
+        $room = $this->getRoomForProgram($startDate, $endDate, $programmeArray['isOnline']);
+
+        if (!$room) {
             $message = 'Not able to assign a room to programme';
             $this->logger->warning($message, ['program' => json_encode($programmeArray)]);
 
             throw new \Exception($message);
         }
 
-        $programme->setRoom($this->getRoomForProgram());
+        $programme->setRoom($room);
 
         $errors = $this->validator->validate($programme);
 
@@ -61,20 +65,60 @@ class BuildProgrammeFromArray
         return $programme;
     }
 
-    private function getRoomForProgram(): ?Room
+    private function getRoomForProgram(\DateTime $startDate, \DateTime $endDate, bool $isOnline): ?Room
     {
-        //TODO - correct code ... return null if no room available...
+        //TODO - refactor to use QueryBuilder
+        //TODO - add column programme to room for better management and to be able to view programmes on room...
+        //TODO - ... alte verificari... date in trecut etc... de preluat din feature csv...
 
-//        $vector = $this->programmeRepository->findOcupiedRooms(
-//            \DateTime::createFromFormat('d.m.Y H:i', '15.03.2022'),
-//            \DateTime::createFromFormat('d.m.Y H:i', '15.03.2022')
-//        );
+        $dql = "SELECT DISTINCT r.id FROM App\Entity\Programme p LEFT JOIN p.room r " .
+            "where ((p.startDate <= :startDate and :startDate <= p.endDate) " .
+                "OR (p.startDate <= :endDate and :endDate <= p.endDate)" .
+                "OR (:startDate <= p.startDate and p.endDate <= :endDate)" .
+                "OR (p.startDate <= :startDate and :endDate <= p.endDate))" .
+            "AND (p.isOnline = :isOnline) AND (p.maxParticipants <= r.capacity)";
 
-        return $this->entityManager->getRepository(Room::class)->find(1);
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameter('startDate', $startDate);
+        $query->setParameter('endDate', $endDate);
+        $query->setParameter('isOnline', $isOnline);
+
+        $ocupiedRoomsId = $query->getResult();
+
+        if ($isOnline) {
+            $a = 'b';
+        }
+
+        $occupiedForQuery = $this->getOcupiedForQuery($ocupiedRoomsId);
+
+        $dqlOnline = "SELECT r FROM App\Entity\Room r LEFT JOIN r.building b " .
+            "where (r.building is null) " .
+            "AND r.id NOT IN (:occupiedRooms)";
+        $dqlNotOnline = "SELECT r FROM App\Entity\Room r LEFT JOIN r.building b " .
+            "where (r.building is not null) " .
+            "AND r.id NOT IN (:occupiedRooms)";
+
+        $dql = $isOnline ? $dqlOnline : $dqlNotOnline;
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameter('occupiedRooms', $occupiedForQuery);
+
+        $availableRooms = $query->getResult();
+
+        return array_shift($availableRooms);
     }
 
-    private function getTrainerForProgram(int $trainerId): ?User
+    private function getOcupiedForQuery(array $ocupiedRoomsId): string
     {
-        return $this->entityManager->getRepository(User::class)->find($trainerId);
+        $notAvailable = [];
+        foreach ($ocupiedRoomsId as $item) {
+            $notAvailable[] = $item['id'];
+        }
+
+        return implode(',', $notAvailable);
     }
 }
+
+/*
+ * SELECT DISTINCT r0_.id AS id_0 FROM programme p1_ LEFT JOIN room r0_ ON p1_.room_id = r0_.id WHERE ((p1_.start_date <= '2022-05-12T10:00:00+03:00' AND '2022-05-12T10:00:00+03:00' < p1_.end_date) OR (p1_.start_date < "2022-05-12T15:00:00+03:00" AND "2022-05-12T15:00:00+03:00" <= p1_.end_date)) AND p1_.is_online = false
+ * SELECT * FROM programme WHERE ((start_date <= '2022-05-11T10:00:00+03:00' AND '2022-05-11T10:00:00+03:00' < end_date) OR (start_date < "2022-05-11T15:00:00+03:00" AND "2022-05-11T15:00:00+03:00" <= end_date)) AND is_online = false
+ */

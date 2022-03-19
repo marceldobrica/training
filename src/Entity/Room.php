@@ -31,19 +31,19 @@ class Room
      * @ORM\ManyToOne(targetEntity="Building")
      * @ORM\JoinColumn(name="building_id", referencedColumnName="id")
      */
-    private Building $building;
+    private ?Building $building;
 
     public function getId(): int
     {
         return $this->id;
     }
 
-    public function getBuilding(): Building
+    public function getBuilding(): ?Building
     {
         return $this->building;
     }
 
-    public function setBuilding(Building $building): self
+    public function setBuilding(?Building $building): self
     {
         $this->building = $building;
 

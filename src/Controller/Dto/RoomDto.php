@@ -15,7 +15,7 @@ class RoomDto
 
     public int $capacity = 0;
 
-    public Building $building;
+    public ?Building $building = null;
 
     public static function createFromRoom(Room $room): self
     {
