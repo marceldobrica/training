@@ -33,16 +33,19 @@ class BuildProgrammeFromArray implements LoggerAwareInterface
         $programme = new Programme();
         $programme->name = $programmeArray['name'];
         $programme->description = $programmeArray['description'];
-        $startDate = \DateTime::createFromFormat('d.m.Y H:i', $programmeArray['startDate']);
-        $programme->setStartDate($startDate);
-        $endDate = \DateTime::createFromFormat('d.m.Y H:i', $programmeArray['endDate']);
-        $programme->setEndDate($endDate);
+        $programme->setStartDate(\DateTime::createFromFormat('d.m.Y H:i', $programmeArray['startDate']));
+        $programme->setEndDate(\DateTime::createFromFormat('d.m.Y H:i', $programmeArray['endDate']));
         $programme->isOnline = $programmeArray['isOnline'];
         $programme->maxParticipants = $programmeArray['maxParticipants'];
 
         $programme->setTrainer(null);
 
-        $room = $this->getRoomForProgram($startDate, $endDate, $programmeArray['isOnline']);
+        $room = $this->getRoomForProgram(
+            \DateTime::createFromFormat('d.m.Y H:i', $programmeArray['startDate']),
+            \DateTime::createFromFormat('d.m.Y H:i', $programmeArray['endDate']),
+            $programmeArray['isOnline'],
+            $programmeArray['maxParticipants']
+        );
 
         if (!$room) {
             $message = 'Not able to assign a room to programme';
@@ -65,8 +68,12 @@ class BuildProgrammeFromArray implements LoggerAwareInterface
         return $programme;
     }
 
-    private function getRoomForProgram(\DateTime $startDate, \DateTime $endDate, bool $isOnline): ?Room
-    {
+    private function getRoomForProgram(
+        \DateTime $startDate,
+        \DateTime $endDate,
+        bool $isOnline,
+        int $maxParticipants
+    ): ?Room {
         //TODO - refactor to use QueryBuilder
         //TODO - add column programme to room for better management and to be able to view programmes on room...
         //TODO - ... alte verificari... date in trecut etc... de preluat din feature csv...
@@ -74,29 +81,32 @@ class BuildProgrammeFromArray implements LoggerAwareInterface
         $dql = "SELECT DISTINCT r.id FROM App\Entity\Programme p LEFT JOIN p.room r " .
             "where ((p.startDate <= :startDate and :startDate <= p.endDate) " .
                 "OR (p.startDate <= :endDate and :endDate <= p.endDate)" .
-                "OR (:startDate <= p.startDate and p.endDate <= :endDate)" .
-                "OR (p.startDate <= :startDate and :endDate <= p.endDate))" .
-            "AND (p.isOnline = :isOnline) AND (p.maxParticipants <= r.capacity)";
+                "OR (:startDate  <= p.startDate and p.endDate <= :endDate))";
 
         $query = $this->entityManager->createQuery($dql);
         $query->setParameter('startDate', $startDate);
         $query->setParameter('endDate', $endDate);
-        $query->setParameter('isOnline', $isOnline);
 
         $ocupiedRoomsId = $query->getResult();
 
-        $occupiedForQuery = $this->getOcupiedForQuery($ocupiedRoomsId);
-
-        $dqlOnline = "SELECT r FROM App\Entity\Room r LEFT JOIN r.building b " .
-            "where (r.building is null) " .
-            "AND r.id NOT IN (:occupiedRooms)";
-        $dqlNotOnline = "SELECT r FROM App\Entity\Room r LEFT JOIN r.building b " .
-            "where (r.building is not null) " .
-            "AND r.id NOT IN (:occupiedRooms)";
+        $dqlOnline = "SELECT r FROM App\Entity\Room r where (r.building is null)";
+        $dqlNotOnline = "SELECT r FROM App\Entity\Room r where (r.building is not null)";
 
         $dql = $isOnline ? $dqlOnline : $dqlNotOnline;
+        $dql = $dql . " AND (r.capacity > :maxParticipants)";
+        $occupiedForQuery = $this->getOcupiedForQuery($ocupiedRoomsId);
+
+        if (!empty($ocupiedRoomsId)) {
+            $dql = $dql . " AND r.id NOT IN (:occupiedRooms)";
+        }
         $query = $this->entityManager->createQuery($dql);
-        $query->setParameter('occupiedRooms', $occupiedForQuery);
+        $query->setParameter('maxParticipants', $maxParticipants);
+
+        if (!empty($ocupiedRoomsId)) {
+            $query->setParameter('occupiedRooms', $occupiedForQuery);
+        }
+
+        var_dump($query->getSQL());
 
         $availableRooms = $query->getResult();
 
