@@ -93,7 +93,7 @@ class BuildProgrammeFromArray implements LoggerAwareInterface
         $dqlNotOnline = "SELECT r FROM App\Entity\Room r where (r.building is not null)";
 
         $dql = $isOnline ? $dqlOnline : $dqlNotOnline;
-        $dql = $dql . " AND (r.capacity > :maxParticipants)";
+        $dql = $dql . " AND (r.capacity >= :maxParticipants)";
         $occupiedForQuery = $this->getOcupiedForQuery($ocupiedRoomsId);
 
         if (!empty($ocupiedRoomsId)) {
