@@ -59,8 +59,11 @@ class ProgrammeController
     /**
      * @Route(methods={"GET"})
      */
-    public function show(): Response
+    public function showAll(): Response
     {
+        //todo paginare - filtrare, paginare, sortare.
+        //parametru in query fie default 10
+        //configurabila in env.
         //TODO ask more about format in postman... if no groups a lot of magic ... __cloner__ __isInitialized__ ??
 
         $serializedProgrammes = $this->serializer->serialize(
@@ -69,6 +72,6 @@ class ProgrammeController
             ['groups' => 'api:programme:all']
         );
 
-        return new JsonResponse($serializedProgrammes, Response::HTTP_OK);
+        return new JsonResponse($serializedProgrammes, Response::HTTP_OK, [], true);
     }
 }
