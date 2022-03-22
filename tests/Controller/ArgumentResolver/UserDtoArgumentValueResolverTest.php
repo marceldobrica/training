@@ -24,21 +24,24 @@ class UserDtoArgumentValueResolverTest extends TestCase
     {
         //TODO ... ask more about this solution... it is not a mock but in a mock i tell what to return...
 
-//        $userDto = new UserDto();
-//        $userDto->firstName = 'Fabien';
-//        $userDto->lastName = 'Potencier';
-//        $userDto->email = 'some@example.com';
-//        $userDto->cnp = '1660713034972';
-//        $userDto->password = 'alabala';
-//        $userDto->confirmedPassword = 'alabala';
-//
-//        $this->serializer = $this->createMock(SerializerInterface::class);
-        //$this->serializer->method('resolve')->willReturn($this->generator([$userDto]));
+        $userDto = new UserDto();
+        $userDto->firstName = 'Fabien';
+        $userDto->lastName = 'Potencier';
+        $userDto->email = 'some@example.com';
+        $userDto->cnp = '1660713034972';
+        $userDto->password = 'alabala';
+        $userDto->confirmedPassword = 'alabala';
+
+        $this->serializer = $this->createMock(SerializerInterface::class);
+        $this->serializer
+            ->expects($this->any())
+            ->method('deserialize')
+            ->willReturn($userDto);
 
         // tests without mock
-        $encoders = [new JsonEncoder()];
-        $normalizers = [new ObjectNormalizer()];
-        $this->serializer = new Serializer($normalizers, $encoders);
+//        $encoders = [new JsonEncoder()];
+//        $normalizers = [new ObjectNormalizer()];
+//        $this->serializer = new Serializer($normalizers, $encoders);
 
         $this->userDtoArgumentValueResolver = new UserDtoArgumentValueResolver($this->serializer);
     }
