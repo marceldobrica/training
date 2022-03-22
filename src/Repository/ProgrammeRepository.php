@@ -31,18 +31,13 @@ class ProgrammeRepository extends ServiceEntityRepository
         }
     }
 
-    public function findOcupiedRooms($startDate, $endDate): array
+    public function findAll(): array
     {
-        $a = $this->createQueryBuilder('p')
-            ->innerJoin('p.room', 'r')
-            ->Where('p.startDate < :startdate AND p.endDate > :startdate')
-            ->orWhere('p.startDate < :enddate AND p.endDate > :enddate')
-            ->setParameter(':startdate', $startDate)
-            ->setParameter(':enddate', $endDate)
-            ->getQuery();
-
-        var_dump($a->getSQL());
-
-        return $a->getResult();
+        return $this->_em
+            ->createQueryBuilder()
+            ->select('p')
+            ->from('App:Programme', 'p')
+            ->getQuery()
+            ->getResult();
     }
 }

@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Controller\Dto\RoomDto;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity()
@@ -14,11 +15,13 @@ class Room
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * @Groups ("api:programme:all")
      */
     private int $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups ("api:programme:all")
      */
     public string $name = '';
 
