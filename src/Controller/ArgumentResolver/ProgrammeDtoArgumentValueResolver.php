@@ -3,6 +3,7 @@
 namespace App\Controller\ArgumentResolver;
 
 use App\Controller\Dto\ProgrammeDto;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Controller\ArgumentValueResolverInterface;
@@ -26,13 +27,21 @@ class ProgrammeDtoArgumentValueResolver implements ArgumentValueResolverInterfac
     {
         $data = $request->getContent();
         $decodedData = json_decode($data, true);
-        $programmeDto = new ProgrammeDto();
-        $programmeDto->name = $decodedData['name'];
-        $programmeDto->description = $decodedData['description'];
-        $programmeDto->startDate = new \DateTime($decodedData['startDate']);
-        $programmeDto->endDate = new \DateTime($decodedData['endDate']);
-        $programmeDto->isOnline = $decodedData['isOnline'];
+        $programeeDto = new ProgrammeDto();
+        $programeeDto->name = $decodedData['name'];
+        $programeeDto->description = $decodedData['description'];
+        $programeeDto->startDate = \DateTime::createFromFormat('d.m.Y H:i', $decodedData['startDate']);
+        $programeeDto->endDate = \DateTime::createFromFormat('d.m.Y H:i', $decodedData['endDate']);
+        $programeeDto->isOnline = $decodedData['isOnline'];
+        $programeeDto->customers = new ArrayCollection();
+        $programeeDto->maxParticipants = $decodedData['maxParticipants'];
+//        if (isset($decodedData['trainer_id'])) {
+//            $programeeDto->trainer = $this->saveProgramme->resolveTrainer($decodedData['trainer_id']);
+//        } else {
+//            $programeeDto->trainer = $this->saveProgramme->resolveTrainer(null);
+//        }
+//        $programeeDto->room = $this->saveProgramme->resolveRoom();
 
-        yield $programmeDto;
+        yield $programeeDto;
     }
 }
