@@ -65,14 +65,14 @@ class ProgrammeController
     {
         $pager = [];
         $pager['currentpage'] = $request->query->get('page', 1);
-        $pager['articlesonpage'] = $request->query->get('items', $this->articlesOnPage);
+        $pager['articlesonpage'] = $request->query->get('size', $this->articlesOnPage);
 
         $filters = [];
         $filters['name'] = $request->query->get('name', '');
         $filters['id'] = $request->query->get('id', '');
 
-        $sorter = $request->query->get('sort', '');
-        $direction = $request->query->get('order', '');
+        $sorter = $request->query->get('sortBy', '');
+        $direction = $request->query->get('orderBy', '');
 
         $serializedProgrammes = $this->serializer->serialize(
             $this->programmeRepository->showAllPaginatedSortedFiltered($pager, $filters, $sorter, $direction),
