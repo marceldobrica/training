@@ -95,7 +95,7 @@ class PageController
 //            '<html><body>Lucky number: '.print_r($rooms, 1).'</body></html>'
 //        );
 //
-        return new Resonse ('Some response');
+        return new Response('Some response');
     }
 
     /**
