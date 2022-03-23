@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\HttpClient;
 
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
@@ -13,8 +14,6 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class HttpClientImportPogramme
 {
-    public const HTTP_PROTOCOL = 'GET';
-
     private HttpClientInterface $client;
 
     private string $httpImportAddress;
@@ -35,7 +34,7 @@ class HttpClientImportPogramme
     public function fetchData(): array
     {
         $response = $this->client->request(
-            $this::HTTP_PROTOCOL,
+            Request::METHOD_GET,
             $this->httpImportAddress
         );
         $content = $response->toArray();
