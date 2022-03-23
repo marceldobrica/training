@@ -114,7 +114,7 @@ class ImportProgrammeFromCsvCommand extends Command
         }
 
         $message = sprintf(
-            'Successfully imported %d programmes and failed to import %d programmes.
+            'Successfully imported %d programmes and failed to import %d programmes. 
             The generated csv file for error rows is %s',
             $this->correctRows,
             $this->wrongRows,
@@ -133,7 +133,7 @@ class ImportProgrammeFromCsvCommand extends Command
     private function handleResources($readHandler, $writeHandler): string
     {
         $receivedHeader = fgets($readHandler);
-        if ($receivedHeader !== 'Name|Description|Start date|End date|Online|MaxParticipants') {
+        if ($receivedHeader !== "Name|Description|Start date|End date|Online|MaxParticipants\n") {
             throw new InvalidCSVHeaderException();
         }
         while (!feof($readHandler)) {
@@ -219,6 +219,8 @@ class ImportProgrammeFromCsvCommand extends Command
      */
     private function writeToErrorCSV(array $row, $writeHandler): void
     {
-        echo 'to do';
+        if (!fputcsv($writeHandler, $row, '|')) {
+            throw \Exception ('Unable to write to csv error file');
+        }
     }
 }

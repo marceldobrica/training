@@ -6,8 +6,5 @@ namespace App\Command;
 
 class NotAbleToAssignRoomException extends \Exception
 {
-    public function errorMessage(): string
-    {
-        return  'Not able to assign a room to programme';
-    }
+    protected $message = 'Not able to assign a room to programme';
 }
