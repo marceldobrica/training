@@ -5,12 +5,12 @@ namespace App\Controller;
 use App\Controller\Dto\ProgrammeDto;
 use App\Entity\Programme;
 use App\Repository\ProgrammeRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @Route (path="/api/programme")
@@ -19,7 +19,7 @@ class ProgrammeController
 {
     use ReturnValidationErrorsTrait;
 
-    private EntityManagerInterface $entityManager;
+    private int $articlesOnPage;
 
     private ValidatorInterface $validator;
 
@@ -30,11 +30,13 @@ class ProgrammeController
     public function __construct(
         ProgrammeRepository $programmeRepository,
         ValidatorInterface $validator,
-        SerializerInterface $serializer
+        SerializerInterface $serializer,
+        string $articlesOnPage
     ) {
         $this->programmeRepository = $programmeRepository;
         $this->validator = $validator;
         $this->serializer = $serializer;
+        $this->articlesOnPage = intval($articlesOnPage);
     }
 
     /**
@@ -59,15 +61,21 @@ class ProgrammeController
     /**
      * @Route(methods={"GET"})
      */
-    public function showAll(): Response
+    public function showAllPaginatedSortedFiltered(Request $request): Response
     {
-        //todo paginare - filtrare, paginare, sortare.
-        //parametru in query fie default 10
-        //configurabila in env.
-        //TODO ask more about format in postman... if no groups a lot of magic ... __cloner__ __isInitialized__ ??
+        $pager = [];
+        $pager['currentpage'] = $request->query->get('page', 1);
+        $pager['articlesonpage'] = $request->query->get('items', $this->articlesOnPage);
+
+        $filters = [];
+        $filters['name'] = $request->query->get('name', '');
+        $filters['id'] = $request->query->get('id', '');
+
+        $sorter = $request->query->get('sort', '');
+        $direction = $request->query->get('order', '');
 
         $serializedProgrammes = $this->serializer->serialize(
-            $this->programmeRepository->findAll(),
+            $this->programmeRepository->showAllPaginatedSortedFiltered($pager, $filters, $sorter, $direction),
             'json',
             ['groups' => 'api:programme:all']
         );

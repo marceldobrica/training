@@ -40,4 +40,50 @@ class ProgrammeRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function showAllPaginatedSortedFiltered(
+        array $pager,
+        array $filters,
+        string $sorter,
+        string $direction
+    ): array {
+        $query = $this->_em
+            ->createQueryBuilder()
+            ->select('p')
+            ->from('App:Programme', 'p')
+            ->setFirstResult($pager['articlesonpage'] * ($pager['currentpage'] - 1))
+            ->setMaxResults($pager['articlesonpage']);
+
+        foreach ($filters as $key => $value) {
+            if ($value !== '') {
+                $query = $query->where("p.$key = :$key");
+                $query->setParameter(":$key", $value);
+            }
+        }
+        $direction = strtoupper($direction);
+
+        if (!in_array($direction, ['ASC', 'DESC'])) {
+            $direction = 'ASC';
+        }
+
+        if ($sorter !== '') {
+            $query = $query->orderBy("p.$sorter", $direction);
+        }
+
+        return $query->getQuery()->getResult();
+    }
+
+    public function findAllPaginated($currentPage, $articlesOnPage): array
+    {
+        $currentPosition = ($currentPage - 1) * $articlesOnPage;
+        $query = $this->_em
+            ->createQueryBuilder()
+            ->select('p')
+            ->from('App:Programme', 'p')
+            ->getQuery()
+            ->setFirstResult($currentPosition)
+            ->setMaxResults($articlesOnPage);
+
+        return $query->getResult();
+    }
 }
