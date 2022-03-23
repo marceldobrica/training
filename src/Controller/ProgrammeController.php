@@ -70,6 +70,10 @@ class ProgrammeController
         $filters = [];
         $filters['name'] = $request->query->get('name', '');
         $filters['id'] = $request->query->get('id', '');
+        $filters['isOnline'] = $request->query->get('isOnline', '');
+        if ($filters['isOnline'] !== '') {
+            $filters['isOnline'] = $request->query->getBoolean('isOnline');
+        }
 
         $sorter = $request->query->get('sortBy', '');
         $direction = $request->query->get('orderBy', '');
