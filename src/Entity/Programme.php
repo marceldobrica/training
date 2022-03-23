@@ -6,6 +6,7 @@ use App\Controller\Dto\ProgrammeDto;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -17,6 +18,7 @@ class Programme
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * @Groups ("api:programme:all")
      */
     private int $id;
 
@@ -24,29 +26,34 @@ class Programme
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank
      * @Assert\Regex("/^[\p{Lu}].+/")
+     * @Groups ("api:programme:all")
      */
     public string $name = '';
 
     /**
      * @ORM\Column(type="text")
+     * @Groups ("api:programme:all")
      */
     public string $description = '';
 
     /**
      * @ORM\Column(type="datetime")
      * @Assert\Type("\DateTimeInterface")
+     * @Groups ("api:programme:all")
      */
     private \DateTime $startDate;
 
     /**
      * @ORM\Column(type="datetime")
      * @Assert\Type("\DateTimeInterface")
+     * @Groups ("api:programme:all")
      */
     private \DateTime $endDate;
 
     /**
      * @ORM\ManyToOne(targetEntity="User")
      * @ORM\JoinColumn(name="trainer_id", referencedColumnName="id", nullable=true)
+     * @Groups ("api:programme:all")
      */
     private ?User $trainer;
 
@@ -54,6 +61,7 @@ class Programme
      * @ORM\ManyToOne(targetEntity="Room")
      * @ORM\JoinColumn(name="room_id", referencedColumnName="id")
      * @Assert\NotBlank
+     * @Groups ("api:programme:all")
      */
     private ?Room $room;
 
@@ -66,11 +74,13 @@ class Programme
 
     /**
      * @ORM\Column(type="boolean")
+     * @Groups ("api:programme:all")
      */
     public bool $isOnline = false;
 
     /**
      * @ORM\Column(type="integer", nullable=false)
+     * @Groups ("api:programme:all")
      */
     public int $maxParticipants = 0;
 

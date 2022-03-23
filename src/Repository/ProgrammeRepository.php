@@ -31,18 +31,59 @@ class ProgrammeRepository extends ServiceEntityRepository
         }
     }
 
-    public function findOcupiedRooms($startDate, $endDate): array
+    public function findAll(): array
     {
-        $a = $this->createQueryBuilder('p')
-            ->innerJoin('p.room', 'r')
-            ->Where('p.startDate < :startdate AND p.endDate > :startdate')
-            ->orWhere('p.startDate < :enddate AND p.endDate > :enddate')
-            ->setParameter(':startdate', $startDate)
-            ->setParameter(':enddate', $endDate)
-            ->getQuery();
+        return $this->_em
+            ->createQueryBuilder()
+            ->select('p')
+            ->from('App:Programme', 'p')
+            ->getQuery()
+            ->getResult();
+    }
 
-        var_dump($a->getSQL());
+    public function showAllPaginatedSortedFiltered(
+        array $pager,
+        array $filters,
+        string $sorter,
+        string $direction
+    ): array {
+        $query = $this->_em
+            ->createQueryBuilder()
+            ->select('p')
+            ->from('App:Programme', 'p')
+            ->setFirstResult($pager['articlesonpage'] * ($pager['currentpage'] - 1))
+            ->setMaxResults($pager['articlesonpage']);
 
-        return $a->getResult();
+        foreach ($filters as $key => $value) {
+            if ($value !== '') {
+                $query = $query->where("p.$key = :$key");
+                $query->setParameter(":$key", $value);
+            }
+        }
+        $direction = strtoupper($direction);
+
+        if (!in_array($direction, ['ASC', 'DESC'])) {
+            $direction = 'ASC';
+        }
+
+        if ($sorter !== '') {
+            $query = $query->orderBy("p.$sorter", $direction);
+        }
+
+        return $query->getQuery()->getResult();
+    }
+
+    public function findAllPaginated($currentPage, $articlesOnPage): array
+    {
+        $currentPosition = ($currentPage - 1) * $articlesOnPage;
+        $query = $this->_em
+            ->createQueryBuilder()
+            ->select('p')
+            ->from('App:Programme', 'p')
+            ->getQuery()
+            ->setFirstResult($currentPosition)
+            ->setMaxResults($articlesOnPage);
+
+        return $query->getResult();
     }
 }

@@ -4,11 +4,13 @@ namespace App\Controller;
 
 use App\Controller\Dto\ProgrammeDto;
 use App\Entity\Programme;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\ProgrammeRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @Route (path="/api/programme")
@@ -17,14 +19,24 @@ class ProgrammeController
 {
     use ReturnValidationErrorsTrait;
 
-    private EntityManagerInterface $entityManager;
+    private int $articlesOnPage;
 
     private ValidatorInterface $validator;
 
-    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator)
-    {
-        $this->entityManager = $entityManager;
+    private SerializerInterface $serializer;
+
+    private ProgrammeRepository $programmeRepository;
+
+    public function __construct(
+        ProgrammeRepository $programmeRepository,
+        ValidatorInterface $validator,
+        SerializerInterface $serializer,
+        string $articlesOnPage
+    ) {
+        $this->programmeRepository = $programmeRepository;
         $this->validator = $validator;
+        $this->serializer = $serializer;
+        $this->articlesOnPage = intval($articlesOnPage);
     }
 
     /**
@@ -40,11 +52,34 @@ class ProgrammeController
             return $this->returnValidationErrors($errors);
         }
 
-        $this->entityManager->persist($programme);
-        $this->entityManager->flush();
-        $this->entityManager->refresh($programme);
+        $this->programmeRepository->add($programme);
         $savedProgrammeDto = ProgrammeDto::createFromProgramme($programme);
 
         return new JsonResponse($savedProgrammeDto, Response::HTTP_CREATED);
+    }
+
+    /**
+     * @Route(methods={"GET"})
+     */
+    public function showAllPaginatedSortedFiltered(Request $request): Response
+    {
+        $pager = [];
+        $pager['currentpage'] = $request->query->get('page', 1);
+        $pager['articlesonpage'] = $request->query->get('items', $this->articlesOnPage);
+
+        $filters = [];
+        $filters['name'] = $request->query->get('name', '');
+        $filters['id'] = $request->query->get('id', '');
+
+        $sorter = $request->query->get('sort', '');
+        $direction = $request->query->get('order', '');
+
+        $serializedProgrammes = $this->serializer->serialize(
+            $this->programmeRepository->showAllPaginatedSortedFiltered($pager, $filters, $sorter, $direction),
+            'json',
+            ['groups' => 'api:programme:all']
+        );
+
+        return new JsonResponse($serializedProgrammes, Response::HTTP_OK, [], true);
     }
 }

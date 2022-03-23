@@ -6,59 +6,42 @@ namespace App\Tests\Controller\ArgumentResolver;
 
 use App\Controller\ArgumentResolver\UserDtoArgumentValueResolver;
 use App\Controller\Dto\UserDto;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
+use Symfony\Component\Serializer\SerializerInterface;
 
-class UserDtoArgumentValueResolverTest extends TestCase
+final class UserDtoArgumentValueResolverTest extends TestCase
 {
+    private MockObject $serializer;
+
     private UserDtoArgumentValueResolver $userDtoArgumentValueResolver;
 
     public function setUp(): void
     {
-        $this->userDtoArgumentValueResolver = new UserDtoArgumentValueResolver();
+        parent::setUp();
+
+        $this->serializer = $this->createMock(SerializerInterface::class);
+
+        $this->userDtoArgumentValueResolver = new UserDtoArgumentValueResolver($this->serializer);
     }
 
-    public function testUserDtoArgumentValueResolver(): void
+    public function testSupportInvalidValue(): void
     {
-        $request = Request::create('/test');
-        $argumentMetaData = new ArgumentMetadata('test', UserDto::class, true, false, new UserDto());
-        $result = $this->userDtoArgumentValueResolver->supports($request, $argumentMetaData);
+        $requestMock = $this->createMock(Request::class);
+        $argumentMetadata = $this->createMock(ArgumentMetadata::class);
+        $argumentMetadata->expects($this->once())->method('getType')->willReturn('test');
 
-        self::assertNotFalse($result);
+        $this->assertFalse($this->userDtoArgumentValueResolver->supports($requestMock, $argumentMetadata));
     }
 
-    public function testResolveArgument()
+    public function testSupportValidValue(): void
     {
-        $request = Request::create(
-            '/test',
-            'POST',
-            [],
-            [],
-            [],
-            [],
-            json_encode([
-                'firstName' => 'Fabien',
-                'lastName' => 'Potencier',
-                'email' => 'some@example.com',
-                'cnp' => '1660713034972',
-                'password' => 'alabala',
-                'confirmedPassword' => 'alabala'
-            ])
-        );
+        $requestMock = $this->createMock(Request::class);
+        $argumentMetadata = $this->createMock(ArgumentMetadata::class);
+        $argumentMetadata->method('getType')->willReturn(UserDto::class);
 
-        $argumentMetadata = new ArgumentMetadata('test', UserDto::class, true, false, new UserDto());
-        $dto = $this->userDtoArgumentValueResolver->resolve($request, $argumentMetadata)->current();
-
-        $userDto = new UserDto();
-        $userDto->firstName = 'Fabien';
-        $userDto->lastName = 'Potencier';
-        $userDto->email = 'some@example.com';
-        $userDto->cnp = '1660713034972';
-        $userDto->password = 'alabala';
-        $userDto->confirmedPassword = 'alabala';
-
-        self::assertIsIterable($this->userDtoArgumentValueResolver->resolve($request, $argumentMetadata));
-        self::assertEquals($userDto, $dto);
+        $this->assertTrue($this->userDtoArgumentValueResolver->supports($requestMock, $argumentMetadata));
     }
 }
