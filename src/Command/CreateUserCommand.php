@@ -41,7 +41,7 @@ class CreateUserCommand extends Command
             ->addArgument('email', InputArgument::REQUIRED, 'E-mail address')
             ->addArgument('firstName', InputArgument::REQUIRED, 'First name')
             ->addArgument('lastName', InputArgument::REQUIRED, 'Last name')
-            ->addArgument('cnp', InputArgument::OPTIONAL, 'CNP')
+            ->addArgument('cnp', InputArgument::REQUIRED, 'CNP')
             ->addOption(
                 'role',
                 null,
@@ -53,15 +53,6 @@ class CreateUserCommand extends Command
 
     protected function interact(InputInterface $input, OutputInterface $output)
     {
-        $arguments = $input->getArguments();
-        foreach ($arguments as $key => $argument) {
-            if ($argument === null && in_array($key, ['email', 'firstName', 'lastName'])) {
-                $helper = $this->getHelper('question');
-                $question = new Question('Please enter the user\'s ' . $key . ':');
-                $input->setArgument($key, $helper->ask($input, $output, $question));
-            }
-        }
-
         $helper = $this->getHelper('question');
         $question = new Question('Please enter the user\'s password:');
         $question->setHidden(true);
@@ -82,17 +73,17 @@ class CreateUserCommand extends Command
         $user->email = $email;
         $user->firstName = $firstName;
         $user->lastName = $lastName;
-        $user->cnp = $cnp ?: ''; //cnp allways errors if optional....
+        $user->cnp = $cnp;
         $user->setRoles($roles);
         $user->setPassword($this->plainPassword);
 
-//        $errors = $this->validator->validate($user);
-//        if (count($errors) > 0) {
-//            foreach ($errors as $error) {
-//                $io->error($error->getPropertyPath() . '-' . $error->getMessage());
-//            }
-//            return self::FAILURE;
-//        }
+        $errors = $this->validator->validate($user);
+        if (count($errors) > 0) {
+            foreach ($errors as $error) {
+                $io->error($error->getPropertyPath() . '-' . $error->getMessage());
+            }
+            return self::FAILURE;
+        }
 
         $this->entityManager->persist($user);
         $this->entityManager->flush();
