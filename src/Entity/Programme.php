@@ -23,31 +23,30 @@ class Programme
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank
-     * @Assert\Regex("/^[A-Z]+/") //todo unicode
+     * @Assert\Regex("/^[\p{Lu}].+/")
      */
     public string $name = '';
 
     /**
      * @ORM\Column(type="text")
-     * @Assert\NotBlank
      */
     public string $description = '';
 
     /**
      * @ORM\Column(type="datetime")
-     * @Assert\DateTime
+     * @Assert\Type("\DateTimeInterface")
      */
     private \DateTime $startDate;
 
     /**
      * @ORM\Column(type="datetime")
-     * @Assert\DateTime
+     * @Assert\Type("\DateTimeInterface")
      */
     private \DateTime $endDate;
 
     /**
      * @ORM\ManyToOne(targetEntity="User")
-     * @ORM\JoinColumn(name="trainer_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="trainer_id", referencedColumnName="id", nullable=true)
      */
     private ?User $trainer;
 
@@ -56,7 +55,7 @@ class Programme
      * @ORM\JoinColumn(name="room_id", referencedColumnName="id")
      * @Assert\NotBlank
      */
-    private Room $room;
+    private ?Room $room;
 
     /**
      * @ORM\ManyToMany(targetEntity="User", inversedBy="programmes")
@@ -69,6 +68,11 @@ class Programme
      * @ORM\Column(type="boolean")
      */
     public bool $isOnline = false;
+
+    /**
+     * @ORM\Column(type="integer", nullable=false)
+     */
+    public int $maxParticipants = 0;
 
     public function __construct()
     {
@@ -121,9 +125,9 @@ class Programme
         return $this->room;
     }
 
-    public function setRoom(Room $room): self
+    public function setRoom(?Room $room): self
     {
-        $this->room = $room;
+        $this->room = $room; //TODO set nextAvailableRoom when $room is null!
 
         return $this;
     }
@@ -175,6 +179,7 @@ class Programme
         $programme->setRoom($programmeDto->room);
         $programme->setCustomers($programmeDto->customers);
         $programme->isOnline = $programmeDto->isOnline;
+        $programme->maxParticipants = $programmeDto->maxParticipants;
 
         return $programme;
     }

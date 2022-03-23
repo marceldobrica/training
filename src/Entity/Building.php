@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Controller\Dto\BuildingDto;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -53,5 +54,14 @@ class Building
         $this->endTime = $endTime;
 
         return $this;
+    }
+
+    public static function createFromDto(BuildingDto $buildingDto): self
+    {
+        $building = new self();
+        $building->setStartTime($buildingDto->startTime);
+        $building->setEndTime($buildingDto->endTime);
+
+        return $building;
     }
 }

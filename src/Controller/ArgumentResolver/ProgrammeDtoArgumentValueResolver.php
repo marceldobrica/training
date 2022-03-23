@@ -3,8 +3,6 @@
 namespace App\Controller\ArgumentResolver;
 
 use App\Controller\Dto\ProgrammeDto;
-use App\Entity\Room;
-use App\Entity\User;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -32,16 +30,17 @@ class ProgrammeDtoArgumentValueResolver implements ArgumentValueResolverInterfac
         $programeeDto = new ProgrammeDto();
         $programeeDto->name = $decodedData['name'];
         $programeeDto->description = $decodedData['description'];
-        $programeeDto->startDate = new \DateTime($decodedData['startDate']);
-        $programeeDto->endDate = new \DateTime($decodedData['endDate']);
-        $roomRepository = $this->entityManager->getRepository(Room::class);
-        $room = $roomRepository->find($decodedData['room']);
-        $programeeDto->room = $room;
-        $userRepository = $this->entityManager->getRepository(User::class);
-        $trainer = $userRepository->find($decodedData['trainer']);
-        $programeeDto->trainer = $trainer;
+        $programeeDto->startDate = \DateTime::createFromFormat('d.m.Y H:i', $decodedData['startDate']);
+        $programeeDto->endDate = \DateTime::createFromFormat('d.m.Y H:i', $decodedData['endDate']);
         $programeeDto->isOnline = $decodedData['isOnline'];
-        $programeeDto->customers = new ArrayCollection(); //customers are not send via api interface
+        $programeeDto->customers = new ArrayCollection();
+        $programeeDto->maxParticipants = $decodedData['maxParticipants'];
+//        if (isset($decodedData['trainer_id'])) {
+//            $programeeDto->trainer = $this->saveProgramme->resolveTrainer($decodedData['trainer_id']);
+//        } else {
+//            $programeeDto->trainer = $this->saveProgramme->resolveTrainer(null);
+//        }
+//        $programeeDto->room = $this->saveProgramme->resolveRoom();
 
         yield $programeeDto;
     }

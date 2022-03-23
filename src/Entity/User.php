@@ -47,14 +47,14 @@ class User
     /**
      * @ORM\Column(type="string", length=255, nullable="false")
      * @Assert\NotBlank
-     * @Assert\Regex("/^[A-Z][a-z]+$/")
+     * @Assert\Regex("/^[\p{Lu}].+/")
      */
     public string $firstName = '';
 
     /**
      * @ORM\Column(type="string", length=255, nullable="false")
      * @Assert\NotBlank
-     * @Assert\Regex("/^[A-Z][a-z]+$/")
+     * @Assert\Regex("/^[\p{Lu}].+/")
      */
     public string $lastName = '';
 
