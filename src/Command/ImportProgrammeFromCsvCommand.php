@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Command;
 
 use App\Entity\Programme;
+use App\Repository\ProgrammeRepository;
+use App\Repository\RoomRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputOption;
@@ -12,11 +14,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class ProgrammeImportCsv extends Command
+class ImportProgrammeFromCsvCommand extends Command
 {
     private const CSV_ERRORS_FILE = 'csv_errors.csv';
 
-    private const DEFAULT_OUTPUT_ERRORS_FOLDER = __DIR__ . '/Files';
+    private string $defaultFilesDirectory;
 
     private int $programmeMinTimeInMinutes;
 
@@ -28,18 +30,28 @@ class ProgrammeImportCsv extends Command
 
     private EntityManagerInterface $entityManager;
 
+    private ProgrammeRepository $programmeRepository;
+
     protected static $defaultName = 'app:programme:import-csv';
 
     protected static $defaultDescription = 'Import programmes from a csv file and generate a csv file for errors';
 
+    private RoomRepository $roomRepository;
+
     public function __construct(
         string $programmeMinTimeInMinutes,
         string $programmeMaxTimeInMinutes,
-        EntityManagerInterface $entityManager
+        string $defaultFilesDirectory,
+        EntityManagerInterface $entityManager,
+        ProgrammeRepository $programmeRepository,
+        RoomRepository $roomRepository
     ) {
         $this->programmeMaxTimeInMinutes = intval($programmeMaxTimeInMinutes);
         $this->programmeMinTimeInMinutes = intval($programmeMinTimeInMinutes);
+        $this->defaultFilesDirectory = $defaultFilesDirectory;
         $this->entityManager = $entityManager;
+        $this->programmeRepository = $programmeRepository;
+        $this->roomRepository = $roomRepository;
 
         parent::__construct();
     }
@@ -75,7 +87,7 @@ class ProgrammeImportCsv extends Command
             return self::FAILURE;
         }
 
-        $outputFolder = $input->getOption('output-folder') ?: self::DEFAULT_OUTPUT_ERRORS_FOLDER;
+        $outputFolder = $input->getOption('output-folder') ?: $this->defaultFilesDirectory;
         $outputFile = $outputFolder . '/' . self::CSV_ERRORS_FILE;
 
         $error = false;
@@ -101,8 +113,13 @@ class ProgrammeImportCsv extends Command
             return self::FAILURE;
         }
 
-        $message = sprintf('Successfully imported %d programmes and failed to import %d programmes.
-            The generated csv file for error rows is %s', $this->correctRows, $this->wrongRows, $outputFile);
+        $message = sprintf(
+            'Successfully imported %d programmes and failed to import %d programmes.
+            The generated csv file for error rows is %s',
+            $this->correctRows,
+            $this->wrongRows,
+            $outputFile
+        );
         $io->success($message);
 
         return self::SUCCESS;
@@ -116,10 +133,10 @@ class ProgrammeImportCsv extends Command
     private function handleResources($readHandler, $writeHandler): string
     {
         $receivedHeader = fgets($readHandler);
-        if ($receivedHeader !== 'Name|Description|Start date|End date|Online') {
+        if ($receivedHeader !== 'Name|Description|Start date|End date|Online|MaxParticipants') {
             throw new InvalidCSVHeaderException();
         }
-        while (! feof($readHandler)) {
+        while (!feof($readHandler)) {
             $receivedRow = fgetcsv($readHandler, null, '|');
             if ($this->verifyRow($receivedRow)) {
                 $this->writeToDatabase($receivedRow);
@@ -133,7 +150,7 @@ class ProgrammeImportCsv extends Command
         return 'message';
     }
 
-    public function verifyRow(array $receivedRow): bool
+    private function verifyRow(array $receivedRow): bool
     {
         if (empty($receivedRow)) {
             return false;
@@ -144,7 +161,7 @@ class ProgrammeImportCsv extends Command
         if (empty($receivedRow['name'])) {
             return false;
         }
-        if (!in_array(strtolower($receivedRow['Online']), ['da','nu'])) {
+        if (!in_array(strtolower($receivedRow['Online']), ['da', 'nu'])) {
             return false;
         }
         $now = new \DateTime('now');
@@ -170,7 +187,7 @@ class ProgrammeImportCsv extends Command
         return true;
     }
 
-    public function writeToDatabase(array $row): void
+    private function writeToDatabase(array $row): void
     {
         $programme = new Programme();
         $programme->name = $row['Name'];
@@ -178,15 +195,29 @@ class ProgrammeImportCsv extends Command
         $programme->setStartDate(\DateTime::createFromFormat('d.m.Y H:i', $row['Start date']));
         $programme->setEndDate(\DateTime::createFromFormat('d.m.Y H:i', $row['End date']));
         $programme->isOnline = strtolower($row['Online']) === 'da';
+        $programme->maxParticipants = $row['MaxParticipants'];
+        $programme->setTrainer(null);
+        $room = $this->roomRepository->getRoomForProgramme(
+            $programme->getStartDate(),
+            $programme->getEndDate(),
+            $programme->isOnline,
+            $programme->maxParticipants
+        );
 
-        $this->entityManager->persist($programme);
-        $this->entityManager->flush();
+        if (!$room) {
+            $this->logger->warning('Not able to asign room', ['program' => json_encode($row)]);
+
+            throw new NotAbleToAssignRoomException();
+        }
+        $programme->setRoom($room);
+
+        $this->programmeRepository->add($programme);
     }
 
     /**
      * @param false|resource $writeHandler
      */
-    public function writeToErrorCSV(array $row, $writeHandler): void
+    private function writeToErrorCSV(array $row, $writeHandler): void
     {
         echo 'to do';
     }

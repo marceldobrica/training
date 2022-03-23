@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Builders;
 
+use App\Command\NotAbleToAssignRoomException;
 use App\Entity\Programme;
 use App\Repository\RoomRepository;
 use Psr\Log\LoggerAwareInterface;
@@ -24,9 +25,6 @@ class BuildProgrammeFromArray implements LoggerAwareInterface
         $this->roomRepository = $roomRepository;
     }
 
-    /**
-     * @throws \Exception
-     */
     public function build(array $programmeArray): ?Programme
     {
         $programme = new Programme();
@@ -50,7 +48,7 @@ class BuildProgrammeFromArray implements LoggerAwareInterface
             $message = 'Not able to assign a room to programme';
             $this->logger->warning($message, ['program' => json_encode($programmeArray)]);
 
-            throw new \Exception($message);
+            throw new NotAbleToAssignRoomException();
         }
 
         $programme->setRoom($room);
