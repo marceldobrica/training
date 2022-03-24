@@ -7,6 +7,7 @@ use App\Entity\Building;
 use App\Entity\Room;
 use App\Entity\User;
 use App\Entity\Programme;
+use App\Repository\RoomRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -20,9 +21,12 @@ class PageController
 
     private EntityManagerInterface $entityManager;
 
-    public function __construct(EntityManagerInterface $entityManager)
+    private RoomRepository $roomRepository;
+
+    public function __construct(EntityManagerInterface $entityManager, RoomRepository $roomRepository)
     {
         $this->entityManager = $entityManager;
+        $this->roomRepository = $roomRepository;
     }
 
     /**
@@ -71,16 +75,26 @@ class PageController
 //        $this->entityManager->persist($user);
 //        $this->entityManager->flush();
 
-        $programeDto = new ProgrammeDto();
-        $programeDto->name = "Yoga avansati";
-        $programeDto->description = "Cel mai avansat curs de yoga de pe piata";
-        $programeDto->isOnline = true;
-        $programeDto->startDate = new \DateTime("15.05.2022 10:00");
-        $programeDto->endDate = new \DateTime("15.05.2022 11:00");
-
-
-
-
+//        $programeDto = new ProgrammeDto();
+//        $programeDto->name = "Yoga avansati";
+//        $programeDto->description = "Cel mai avansat curs de yoga de pe piata";
+//        $programeDto->isOnline = true;
+//        $programeDto->startDate = new \DateTime("15.05.2022 10:00");
+//        $programeDto->endDate = new \DateTime("15.05.2022 11:00");
+//
+//        $rooms = $this->roomRepository->getRoomForProgramme(
+//            new \DateTime('2022-04-15 10:00'),
+//            new \DateTime('2022-04-15 11:00'),
+//            true,
+//            11
+//        );
+//
+//        //return new JsonResponse($rooms, Response::HTTP_OK);
+//
+//        return new Response(
+//            '<html><body>Lucky number: '.print_r($rooms, 1).'</body></html>'
+//        );
+//
         return new Response('Some response');
     }
 
