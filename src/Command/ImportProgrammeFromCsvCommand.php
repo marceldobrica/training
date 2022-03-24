@@ -150,32 +150,33 @@ class ImportProgrammeFromCsvCommand extends Command
         if (empty($receivedRow)) {
             return false;
         }
-        if (count($receivedRow) !== 5) {
+        if (count($receivedRow) !== 6) {
             return false;
         }
-        if (empty($receivedRow['name'])) {
+        if (empty($receivedRow[0])) {
             return false;
         }
-        if (!in_array(strtolower($receivedRow['Online']), ['da', 'nu'])) {
+        if (!in_array(strtolower($receivedRow[4]), ['da', 'nu'])) {
             return false;
         }
         $now = new \DateTime('now');
-        $programmeStartDate = \DateTime::createFromFormat('d.m.Y H:i', $receivedRow['Start date']);
+        $programmeStartDate = \DateTime::createFromFormat('d.m.Y H:i', $receivedRow[2]);
         if ($programmeStartDate < $now) {
             return false;
         }
-        $programmeEndDate = \DateTime::createFromFormat('d.m.Y H:i', $receivedRow['End date']);
+        $programmeEndDate = \DateTime::createFromFormat('d.m.Y H:i', $receivedRow[3]);
         if ($programmeEndDate < $now) {
             return false;
         }
+        if ($programmeEndDate < $programmeStartDate) {
+            return false;
+        }
         $interval = $programmeStartDate->diff($programmeEndDate);
-        if ($interval->m < 0) {
+        $minute = $interval->d*24*60+$interval->h*60+$interval->i;
+        if ($this->programmeMinTimeInMinutes > $minute) {
             return false;
         }
-        if ($this->programmeMinTimeInMinutes > $interval->m) {
-            return false;
-        }
-        if ($this->programmeMaxTimeInMinutes < $interval->m) {
+        if ($this->programmeMaxTimeInMinutes < $minute) {
             return false;
         }
 
@@ -185,12 +186,12 @@ class ImportProgrammeFromCsvCommand extends Command
     private function writeToDatabase(array $row): void
     {
         $programme = new Programme();
-        $programme->name = $row['Name'];
-        $programme->description = $row['Description'];
-        $programme->setStartDate(\DateTime::createFromFormat('d.m.Y H:i', $row['Start date']));
-        $programme->setEndDate(\DateTime::createFromFormat('d.m.Y H:i', $row['End date']));
-        $programme->isOnline = strtolower($row['Online']) === 'da';
-        $programme->maxParticipants = $row['MaxParticipants'];
+        $programme->name = $row[0];
+        $programme->description = $row[1];
+        $programme->setStartDate(\DateTime::createFromFormat('d.m.Y H:i', $row[2]));
+        $programme->setEndDate(\DateTime::createFromFormat('d.m.Y H:i', $row[3]));
+        $programme->isOnline = strtolower($row[4]) === 'da';
+        $programme->maxParticipants = intval($row[5]);
         $programme->setTrainer(null);
         $room = $this->roomRepository->getRoomForProgramme(
             $programme->getStartDate(),
