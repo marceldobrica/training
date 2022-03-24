@@ -15,6 +15,7 @@ services:
             $programmeMaxTimeInMinutes: '%env(PROGRAMME_MAX_TIME_MINUTES)%'
             $articlesOnPage: '%env(ARTICLES_ON_PAGE)%'
             $httpImportAddress: '%env(EVOZON_WAREHOUSE_BASE_URI)%'
+            $defaultFilesDirectory: '%kernel.project_dir%/var/files'
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name

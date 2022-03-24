@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Command;
 
+use App\Repository\UserRepository;
 use Symfony\Component\Console\Question\Question;
 use App\Entity\User;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -23,13 +23,13 @@ class CreateUserCommand extends Command
 
     private string $plainPassword;
 
-    private EntityManagerInterface $entityManager;
+    private UserRepository $userRepository;
 
     private ValidatorInterface $validator;
 
-    public function __construct(EntityManagerInterface $entityManager, ValidatorInterface $validator)
+    public function __construct(UserRepository $userRepository, ValidatorInterface $validator)
     {
-        $this->entityManager = $entityManager;
+        $this->userRepository = $userRepository;
         $this->validator = $validator;
 
         parent::__construct();
@@ -53,28 +53,21 @@ class CreateUserCommand extends Command
 
     protected function interact(InputInterface $input, OutputInterface $output)
     {
-        $helper = $this->getHelper('question');
         $question = new Question('Please enter the user\'s password:');
         $question->setHidden(true);
-        $this->plainPassword = $helper->ask($input, $output, $question);
+        $this->plainPassword = $this->getHelper('question')->ask($input, $output, $question);
     }
 
     public function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 
-        $email = $input->getArgument('email');
-        $firstName = $input->getArgument('firstName');
-        $lastName = $input->getArgument('lastName');
-        $cnp = $input->getArgument('cnp');
-        $roles = $input->getOption('role');
-
         $user = new User();
-        $user->email = $email;
-        $user->firstName = $firstName;
-        $user->lastName = $lastName;
-        $user->cnp = $cnp;
-        $user->setRoles($roles);
+        $user->email = $input->getArgument('email');
+        $user->firstName = $input->getArgument('firstName');
+        $user->lastName = $input->getArgument('lastName');
+        $user->cnp = $input->getArgument('cnp');
+        $user->setRoles($input->getOption('role'));
         $user->setPassword($this->plainPassword);
 
         $errors = $this->validator->validate($user);
@@ -85,9 +78,7 @@ class CreateUserCommand extends Command
             return self::FAILURE;
         }
 
-        $this->entityManager->persist($user);
-        $this->entityManager->flush();
-        $this->entityManager->refresh($user);
+        $this->userRepository->add($user);
 
         $io->success('You have created an user');
 
