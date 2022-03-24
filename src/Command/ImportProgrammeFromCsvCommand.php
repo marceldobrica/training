@@ -172,7 +172,7 @@ class ImportProgrammeFromCsvCommand extends Command
             return false;
         }
         $interval = $programmeStartDate->diff($programmeEndDate);
-        $minute = $interval->d*24*60+$interval->h*60+$interval->i;
+        $minute = $interval->d * 24 * 60 + $interval->h * 60 + $interval->i;
         if ($this->programmeMinTimeInMinutes > $minute) {
             return false;
         }
