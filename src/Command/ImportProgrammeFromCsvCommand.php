@@ -7,7 +7,6 @@ namespace App\Command;
 use App\Entity\Programme;
 use App\Repository\ProgrammeRepository;
 use App\Repository\RoomRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -28,8 +27,6 @@ class ImportProgrammeFromCsvCommand extends Command
 
     private int $wrongRows = 0;
 
-    private EntityManagerInterface $entityManager;
-
     private ProgrammeRepository $programmeRepository;
 
     protected static $defaultName = 'app:programme:import-csv';
@@ -42,14 +39,12 @@ class ImportProgrammeFromCsvCommand extends Command
         string $programmeMinTimeInMinutes,
         string $programmeMaxTimeInMinutes,
         string $defaultFilesDirectory,
-        EntityManagerInterface $entityManager,
         ProgrammeRepository $programmeRepository,
         RoomRepository $roomRepository
     ) {
         $this->programmeMaxTimeInMinutes = intval($programmeMaxTimeInMinutes);
         $this->programmeMinTimeInMinutes = intval($programmeMinTimeInMinutes);
         $this->defaultFilesDirectory = $defaultFilesDirectory;
-        $this->entityManager = $entityManager;
         $this->programmeRepository = $programmeRepository;
         $this->roomRepository = $roomRepository;
 
@@ -126,8 +121,8 @@ class ImportProgrammeFromCsvCommand extends Command
     }
 
     /**
-     * @param false|resource $readHandler
-     * @param false|resource $writeHandler
+     * @param resource $readHandler
+     * @param resource $writeHandler
      * @throws InvalidCSVHeaderException
      */
     private function handleResources($readHandler, $writeHandler): string
@@ -205,22 +200,22 @@ class ImportProgrammeFromCsvCommand extends Command
         );
 
         if (!$room) {
-            $this->logger->warning('Not able to asign room', ['program' => json_encode($row)]);
-
             throw new NotAbleToAssignRoomException();
         }
+
         $programme->setRoom($room);
 
         $this->programmeRepository->add($programme);
     }
 
     /**
-     * @param false|resource $writeHandler
+     * @param resource $writeHandler
+     * @throws \Exception
      */
     private function writeToErrorCSV(array $row, $writeHandler): void
     {
         if (!fputcsv($writeHandler, $row, '|')) {
-            throw \Exception ('Unable to write to csv error file');
+            throw new \Exception('Unable to write to csv error file');
         }
     }
 }
