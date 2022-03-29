@@ -13,6 +13,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class CreateUserCommand extends Command
@@ -27,10 +28,16 @@ class CreateUserCommand extends Command
 
     private ValidatorInterface $validator;
 
-    public function __construct(UserRepository $userRepository, ValidatorInterface $validator)
-    {
+    private UserPasswordHasherInterface $passwordHasher;
+
+    public function __construct(
+        UserRepository $userRepository,
+        ValidatorInterface $validator,
+        UserPasswordHasherInterface $passwordHasher
+    ) {
         $this->userRepository = $userRepository;
         $this->validator = $validator;
+        $this->passwordHasher = $passwordHasher;
 
         parent::__construct();
     }
@@ -68,7 +75,7 @@ class CreateUserCommand extends Command
         $user->lastName = $input->getArgument('lastName');
         $user->cnp = $input->getArgument('cnp');
         $user->setRoles($input->getOption('role'));
-        $user->setPassword($this->plainPassword);
+        $user->setPassword($this->passwordHasher->hashPassword($user, $this->plainPassword));
 
         $errors = $this->validator->validate($user);
         if (count($errors) > 0) {

@@ -3,17 +3,21 @@
 namespace App\Entity;
 
 use App\Controller\Dto\UserDto;
+use App\Repository\UserRepository;
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Validator as MyAssert;
 
 /**
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass=UserRepository::class)
+ * @ORM\Table(name="`user`")
  */
-class User
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     /**
      * @ORM\Id()
@@ -24,12 +28,13 @@ class User
     private int $id;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, unique=true)
      * @Assert\Email
      */
     public string $email = '';
 
     /**
+     * @var string The hashed password
      * @ORM\Column(type="string", length=255)
      * @MyAssert\Password
      */
@@ -41,7 +46,7 @@ class User
     private array $roles = [];
 
     /**
-     * @ORM\Column(type="string", columnDefinition="CHAR(13) NOT NULL")
+     * @ORM\Column(type="string", length=13)
      * @MyAssert\Cnp
      */
     public string $cnp = '';
@@ -67,6 +72,27 @@ class User
      */
     private Collection $programmes;
 
+    /**
+     * @ORM\Column(type="string", unique=true, nullable=true)
+     */
+    private string $token;
+
+    /**
+     * @return string
+     */
+    public function getToken(): string
+    {
+        return $this->token;
+    }
+
+    /**
+     * @param string $token
+     */
+    public function setToken(string $token): void
+    {
+        $this->token = $token;
+    }
+
     public function __construct()
     {
         $this->programmes = new ArrayCollection();
@@ -77,6 +103,19 @@ class User
         return $this->id;
     }
 
+    /**
+     * A visual identifier that represents this user.
+     *
+     * @see UserInterface
+     */
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->email;
+    }
+
+    /**
+     * @see PasswordAuthenticatedUserInterface
+     */
     public function getPassword(): string
     {
         return $this->password;
@@ -89,9 +128,33 @@ class User
         return $this;
     }
 
+    /**
+     * Returning a salt is only needed, if you are not using a modern
+     * hashing algorithm (e.g. bcrypt or sodium) in your security.yaml.
+     *
+     * @see UserInterface
+     */
+    public function getSalt(): ?string
+    {
+        return null;
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function eraseCredentials()
+    {
+        // If you store any temporary, sensitive data on the user, clear it here
+        // $this->plainPassword = null;
+    }
+
     public function getRoles(): array
     {
-        return $this->roles;
+        $roles = $this->roles;
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
     }
 
     public function setRoles(array $roles): self
@@ -161,7 +224,7 @@ class User
     public static function createFromDto(UserDto $userDto): self
     {
         $user = new self();
-        $user->setRoles(['customer']);
+        $user->addRole('ROLE_USER');
         $user->cnp = $userDto->cnp;
         $user->firstName = $userDto->firstName;
         $user->lastName = $userDto->lastName;
@@ -169,5 +232,13 @@ class User
         $user->setPassword($userDto->password);
 
         return $user;
+    }
+
+    /**
+     * @deprecated since Symfony 5.3, use getUserIdentifier instead
+     */
+    public function getUsername(): string
+    {
+        return (string) $this->email;
     }
 }

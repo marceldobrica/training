@@ -10,7 +10,9 @@ use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
@@ -28,14 +30,22 @@ class UserController implements LoggerAwareInterface
 
     private UserRepository $userRepository;
 
+    private UserPasswordHasherInterface $passwordHasher;
+
+    private Security $security;
+
     public function __construct(
         EntityManagerInterface $entityManager,
         ValidatorInterface $validator,
-        UserRepository $userRepository
+        UserRepository $userRepository,
+        UserPasswordHasherInterface $passwordHasher,
+        Security $security
     ) {
         $this->entityManager = $entityManager;
         $this->validator = $validator;
         $this->userRepository = $userRepository;
+        $this->passwordHasher = $passwordHasher;
+        $this->security = $security;
     }
 
     /**
@@ -43,6 +53,10 @@ class UserController implements LoggerAwareInterface
      */
     public function register(UserDto $userDto): Response
     {
+        if (!$this->security->isGranted('ROLE_ADMIN')) {
+            return new JsonResponse(['You are not allowed to access this url'], Response::HTTP_FORBIDDEN);
+        }
+
         $errorsDto = $this->validator->validate($userDto);
         if (count($errorsDto) > 0) {
             return $this->returnValidationErrors($errorsDto);
@@ -51,6 +65,7 @@ class UserController implements LoggerAwareInterface
         $this->logger->info('An userDto was validated');
 
         $user = User::createFromDto($userDto);
+        $user->setPassword($this->passwordHasher->hashPassword($user, $user->getPassword()));
         $errorsUser = $this->validator->validate($user);
 
         if (count($errorsUser) > 0) {
@@ -82,9 +97,9 @@ class UserController implements LoggerAwareInterface
 //            return new JsonResponse();
 //        }
 //
-//        $savedUserDto = UserDto::createFromUser($user);
 //
-//        return new JsonResponse($savedUserDto, Response::HTTP_CREATED);
+//
+//        return new JsonResponse(['User with id' . $id . ' was deleted.'], Response::HTTP_OK);
 //    }
 //
 //    /**
