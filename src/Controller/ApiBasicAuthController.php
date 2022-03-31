@@ -11,7 +11,7 @@ class ApiBasicAuthController
     /**
      * @Route("/api/basic", methods={"GET"})
      */
-    public function index(): Response
+    public function verifyBasicAuthAccessAction(): Response
     {
         return new JsonResponse([
             'message' => 'Welcome to your new controller visible if you are authentificated with Basic Auth!'

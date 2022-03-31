@@ -10,6 +10,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Validator as MyAssert;
 
@@ -73,22 +74,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $programmes;
 
     /**
-     * @ORM\Column(type="string", unique=true, nullable=true)
+     * @ORM\Column(type="uuid", unique=true, nullable=true)
      */
-    private string $token;
+    private Uuid $token;
 
-    /**
-     * @return string
-     */
-    public function getToken(): string
+    public function getToken(): Uuid
     {
         return $this->token;
     }
 
-    /**
-     * @param string $token
-     */
-    public function setToken(string $token): void
+    public function setToken(Uuid $token): void
     {
         $this->token = $token;
     }
@@ -96,6 +91,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function __construct()
     {
         $this->programmes = new ArrayCollection();
+        $this->userResetPasswordTokens = new ArrayCollection();
     }
 
     public function getId(): int
