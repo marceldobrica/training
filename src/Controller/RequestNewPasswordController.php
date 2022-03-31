@@ -7,6 +7,8 @@ namespace App\Controller;
 use App\Form\Type\RequestNewPasswordType;
 use App\MailHandling\SendNewPasswordMail;
 use App\Repository\UserRepository;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,8 +17,10 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * @Route("/user/")
  */
-class RequestNewPasswordController extends AbstractController
+class RequestNewPasswordController extends AbstractController implements LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
     private UserRepository $userRepository;
 
     private SendNewPasswordMail $sendNewPasswordMail;
@@ -43,9 +47,10 @@ class RequestNewPasswordController extends AbstractController
             $receivedEmail = $form->getData()['email'];
             $user = $this->userRepository->findOneBy(['email' => $receivedEmail]);
             if (null !== $user) {
+                $this->logger->error('No user found for received email', ['receivedEmail' => $receivedEmail]);
                 $this->sendNewPasswordMail->handle($user);
             }
-            return $this->render('request_new_password/confirmation.html.twig', [
+            return $this->render('request_new_password/form.html.twig', [
                     'email' => $receivedEmail,
             ]);
         }

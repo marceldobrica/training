@@ -7,8 +7,8 @@ namespace App\Controller;
 use App\Form\Type\ResetPasswordType;
 use App\Repository\UserRepository;
 use App\Repository\UserResetPasswordTokenRepository;
-use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,8 +18,10 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * @Route ("/user/")
  */
-class ResetPasswordController extends AbstractController
+class ResetPasswordController extends AbstractController implements LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
     use ReturnValidationErrorsTrait;
 
     private UserResetPasswordTokenRepository $userResetPasswordTokenRepository;
@@ -49,12 +51,14 @@ class ResetPasswordController extends AbstractController
     {
         $userReset = $this->userResetPasswordTokenRepository->findOneBy(['resetToken' => $request->get('token')]);
         if (null === $userReset) {
+            $this->logger->error('Password reset token no longer valid');
             return new Response('Token is no longer valid. Please make your request again!');
         }
 
         $interval = $userReset->getCreatedAt()->diff(new \Datetime('now'));
         if ($interval->i > $this->passwordResetExpirationMinutes) {
-            return new Response('Token is no longer valid');
+            $this->logger->error('Password reset token no longer valid');
+            return new Response('Token is no longer valid. Please make your request again!');
         }
         $user = $userReset->getUser();
         $form = $this->createForm(ResetPasswordType::class);
@@ -65,8 +69,8 @@ class ResetPasswordController extends AbstractController
             $user->setPassword($this->passwordHasher->hashPassword($user, $user->getPassword()));
             $this->userRepository->add($user);
 
-            return $this->renderForm('reset_password/confirmation.html.twig', [
-                'form' => $form,
+            return $this->renderForm('reset_password/form.html.twig', [
+                'email' => $user->email,
             ]);
         }
 

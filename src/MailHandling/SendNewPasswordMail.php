@@ -10,7 +10,6 @@ use App\Repository\UserResetPasswordTokenRepository;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Uid\Uuid;
@@ -35,12 +34,7 @@ class SendNewPasswordMail implements LoggerAwareInterface
         $this->passwordResetExpirationMinutes = $passwordResetExpirationMinutes;
     }
 
-    /**
-     * @return Response|void
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     */
-    public function handle(User $user)
+    public function handle(User $user): void
     {
         $userToken = $this->userResetPasswordTokenRepository->findOneBy(['user' => $user]);
         if (null === $userToken) {
