@@ -5,11 +5,9 @@ namespace App\Controller;
 use App\Controller\Dto\ProgrammeDto;
 use App\Entity\Programme;
 use App\Repository\ProgrammeRepository;
-use Symfony\Component\HttpFoundation\AcceptHeader;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -24,19 +22,15 @@ class ProgrammeController
 
     private ValidatorInterface $validator;
 
-    private SerializerInterface $serializer;
-
     private ProgrammeRepository $programmeRepository;
 
     public function __construct(
         ProgrammeRepository $programmeRepository,
         ValidatorInterface $validator,
-        SerializerInterface $serializer,
         string $articlesOnPage
     ) {
         $this->programmeRepository = $programmeRepository;
         $this->validator = $validator;
-        $this->serializer = $serializer;
         $this->articlesOnPage = intval($articlesOnPage);
     }
 
@@ -62,55 +56,24 @@ class ProgrammeController
     /**
      * @Route(methods={"GET"})
      */
-    public function showAllPaginatedSortedFiltered(Request $request): Response
+    public function showAllPaginatedSortedFiltered(Request $request): array
     {
-        $acceptHeader = AcceptHeader::fromString($request->headers->get('Accept'));
-
-        if (
-            !$acceptHeader->has('application/xml') &&
-            !$acceptHeader->has('application/json')
-        ) {
-            return new Response(
-                "Bad request. Only accepted headers: 'application/json', 'application/xml'",
-                Response::HTTP_BAD_REQUEST
-            );
-        }
-
         $pager = [];
-        $pager['currentpage'] = $request->query->get('page', 1);
-        $pager['articlesonpage'] = $request->query->get('size', $this->articlesOnPage);
+        $pager['page'] = $request->query->get('page', 1);
+        $pager['size'] = $request->query->get('size', $this->articlesOnPage);
 
         $filters = [];
-        $filters['name'] = $request->query->get('name', '');
-        $filters['id'] = $request->query->get('id', '');
-        $filters['isOnline'] = $request->query->get('isOnline', '');
-        if ($filters['isOnline'] !== '') {
+        $filters['name'] = $request->query->get('name', null);
+        $filters['id'] = $request->query->get('id', null);
+        $filters['isOnline'] = $request->query->get('isOnline', null);
+        if (null !== $filters['isOnline']) {
             $filters['isOnline'] = $request->query->getBoolean('isOnline');
         }
 
-        $sorter = $request->query->get('sortBy', '');
-        $direction = $request->query->get('orderBy', '');
+        $sorter = $request->query->get('sortBy', null);
+        $direction = $request->query->get('orderBy', null);
 
-        if ($acceptHeader->has('application/json')) {
-            $serializedProgrammes = $this->serializer->serialize(
-                $this->programmeRepository->showAllPaginatedSortedFiltered($pager, $filters, $sorter, $direction),
-                'json',
-                ['groups' => 'api:programme:all']
-            );
-
-            return new JsonResponse($serializedProgrammes, Response::HTTP_OK, [], true);
-        }
-
-        if ($acceptHeader->has('application/xml')) {
-            $serializedProgrammes = $this->serializer->serialize(
-                $this->programmeRepository->showAllPaginatedSortedFiltered($pager, $filters, $sorter, $direction),
-                'xml',
-                ['groups' => 'api:programme:all']
-            );
-
-            return new Response($serializedProgrammes, Response::HTTP_OK, ['Content-Type' => 'application/xml']);
-        }
-
-        return new Response('Bad request', Response::HTTP_BAD_REQUEST);
+        return $this->programmeRepository
+            ->showAllPaginatedSortedFiltered($pager, $filters, $sorter, $direction);
     }
 }

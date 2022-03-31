@@ -44,29 +44,29 @@ class ProgrammeRepository extends ServiceEntityRepository
     public function showAllPaginatedSortedFiltered(
         array $pager,
         array $filters,
-        string $sorter,
-        string $direction
+        ?string $sorter,
+        ?string $direction
     ): array {
         $query = $this->_em
             ->createQueryBuilder()
             ->select('p')
             ->from('App:Programme', 'p')
-            ->setFirstResult($pager['articlesonpage'] * ($pager['currentpage'] - 1))
-            ->setMaxResults($pager['articlesonpage']);
+            ->setFirstResult($pager['size'] * ($pager['page'] - 1))
+            ->setMaxResults($pager['size']);
 
         foreach ($filters as $key => $value) {
-            if ($value !== '') {
+            if (null !== $value) {
                 $query = $query->where("p.$key = :$key");
                 $query->setParameter(":$key", $value);
             }
         }
-        $direction = strtoupper($direction);
 
-        if (!in_array($direction, ['ASC', 'DESC'])) {
-            $direction = 'ASC';
-        }
-
-        if ($sorter !== '') {
+        if (null !== $sorter) {
+            $direction = $direction ?? 'ASC';
+            $direction = strtoupper($direction);
+            if (!in_array($direction, ['ASC', 'DESC'])) {
+                $direction = 'ASC';
+            }
             $query = $query->orderBy("p.$sorter", $direction);
         }
 
