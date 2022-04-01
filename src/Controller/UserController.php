@@ -53,10 +53,6 @@ class UserController implements LoggerAwareInterface
      */
     public function register(UserDto $userDto): Response
     {
-        if (!$this->security->isGranted('ROLE_ADMIN')) {
-            return new JsonResponse(['You are not allowed to access this url'], Response::HTTP_FORBIDDEN);
-        }
-
         $errorsDto = $this->validator->validate($userDto);
         if (count($errorsDto) > 0) {
             return $this->returnValidationErrors($errorsDto);

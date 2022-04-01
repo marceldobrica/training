@@ -32,8 +32,9 @@ class PageController
     /**
      * @Route("/message", methods={"GET"})
      */
-    public function index(): Response
+    public function indexAction(): Response
     {
+        //My first page.... probably it should be deleted...
         //I'm able to make and save a building...
 //        $building = new Building();
 //        $building->setStartTime(new \DateTime('now'));

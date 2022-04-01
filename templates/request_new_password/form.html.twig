@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello user!{% endblock %}
+
+{% block body %}
+    <div class="container-md m-5">
+        {% if  email | default() %}
+            <h1>Hello {{ email }}!</h1>
+
+            <h2>If your e-mail address is recorded in our database,
+                you'll receive an email with more info about how to reset your password.</h2>
+        {% else %}
+            <h1>Hello !</h1>
+
+            <h2>Is not unusual to forgot your password!</h2>
+
+            <p>Please enter your e-mail address bellow:</p>
+            {{ form(form) }}
+        {% endif %}
+    </div>
+{% endblock %}

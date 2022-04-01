@@ -11,7 +11,7 @@ class ApiAdminController
     /**
      * @Route("/api/admin",methods={"GET"})
      */
-    public function index(): Response
+    public function verifyAdminAccessAction(): Response
     {
 
         return new JsonResponse([
