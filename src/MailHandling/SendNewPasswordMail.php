@@ -4,60 +4,55 @@ declare(strict_types=1);
 
 namespace App\MailHandling;
 
-use App\Entity\User;
-use App\Entity\UserResetPasswordToken;
-use App\Repository\UserResetPasswordTokenRepository;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Uid\Uuid;
 
 class SendNewPasswordMail implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
-    private UserResetPasswordTokenRepository $userResetPasswordTokenRepository;
-
     private MailerInterface $mailer;
 
     private string $passwordResetExpirationMinutes;
 
+    private RouterInterface $router;
+
     public function __construct(
-        UserResetPasswordTokenRepository $userResetPasswordTokenRepository,
         MailerInterface $mailer,
-        $passwordResetExpirationMinutes
+        $passwordResetExpirationMinutes,
+        RouterInterface $router
     ) {
-        $this->userResetPasswordTokenRepository = $userResetPasswordTokenRepository;
         $this->mailer = $mailer;
         $this->passwordResetExpirationMinutes = $passwordResetExpirationMinutes;
+        $this->router = $router;
     }
 
-    public function handle(User $user): void
+    public function sendResetPasswordMail(string $emailAddress, Uuid $resetToken): void
     {
-        $userToken = $this->userResetPasswordTokenRepository->findOneBy(['user' => $user]);
-        if (null === $userToken) {
-            $userToken = new UserResetPasswordToken();
-        }
-        $userToken->setUser($user);
-        $resetToken = Uuid::v4();
-        $userToken->setResetToken($resetToken);
-        $userToken->setCreatedAt(new \DateTime());
-        $this->userResetPasswordTokenRepository->add($userToken);
+        $resetPasswordUrl = $this->router->generate('app_reset_password', [
+            'token' => $resetToken
+        ], UrlGeneratorInterface::ABSOLUTE_URL);
 
         $email = (new TemplatedEmail())
             ->from('marceldobrica66@gmail.com')
-            ->to($user->email)
+            ->to($emailAddress)
             ->subject('Reset password')
             ->htmlTemplate('emails/password-reset.html.twig')
             ->context([
-                'token' => $resetToken,
+                'resetlink' => $resetPasswordUrl,
+                'mail' => $emailAddress,
                 'expiration_date' => new \DateTime('+' . $this->passwordResetExpirationMinutes . ' minutes'),
             ]);
 
         try {
             $this->mailer->send($email);
+            $this->logger->info('Reset password email sent.', ['to' => $emailAddress]);
         } catch (TransportExceptionInterface $e) {
             $this->logger->error($e->getMessage(), [$e]);
         }

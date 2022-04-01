@@ -52,21 +52,23 @@ class ResetPasswordController extends AbstractController implements LoggerAwareI
         $userReset = $this->userResetPasswordTokenRepository->findOneBy(['resetToken' => $request->get('token')]);
         if (null === $userReset) {
             $this->logger->error('Password reset token no longer valid');
+
             return new Response('Token is no longer valid. Please make your request again!');
         }
 
         $interval = $userReset->getCreatedAt()->diff(new \Datetime('now'));
         if ($interval->i > $this->passwordResetExpirationMinutes) {
             $this->logger->error('Password reset token no longer valid');
+
             return new Response('Token is no longer valid. Please make your request again!');
         }
+
         $user = $userReset->getUser();
         $form = $this->createForm(ResetPasswordType::class);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $user->setPassword($form->getData()['password']);
-            $user->setPassword($this->passwordHasher->hashPassword($user, $user->getPassword()));
+            $user->setPassword($this->passwordHasher->hashPassword($user, $form->getData()['password']));
             $this->userRepository->add($user);
 
             return $this->renderForm('reset_password/form.html.twig', [
