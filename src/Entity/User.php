@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Controller\Dto\UserDto;
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -17,6 +18,7 @@ use App\Validator as MyAssert;
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  * @ORM\Table(name="`user`")
+ * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false, hardDelete=false)
  */
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -77,6 +79,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\Column(type="uuid", unique=true, nullable=true)
      */
     private Uuid $token;
+
+    /**
+     * @ORM\Column(type="datetime", name="deletedAt")
+     */
+    private ?\DateTime $deletedAt;
 
     /**
      * @ORM\Column(type="string", length=10)
@@ -240,6 +247,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getUsername(): string
     {
         return (string) $this->email;
+    }
+
+    public function getDeletedAt(): ?\DateTimeInterface
+    {
+        return $this->deletedAt;
+    }
+
+    public function setDeletedAt(?\DateTimeInterface $deletedAt): self
+    {
+        $this->deletedAt = $deletedAt;
+
+        return $this;
     }
 
     public function getPhone(): ?string
