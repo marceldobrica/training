@@ -83,7 +83,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @ORM\Column(type="datetime", name="deletedAt")
      */
-    private ?\DateTime $deletedAt;
+    private ?\DateTimeInterface $deletedAt;
 
     /**
      * @ORM\Column(type="string", length=10)
