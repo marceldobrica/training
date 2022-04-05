@@ -49,6 +49,7 @@ security:
         - { path: ^/api/admin, roles: ROLE_ADMIN }
         - { path: ^/api/trainer, roles: ROLE_TRAINER }
         - { path: ^/api, roles: ROLE_USER }
+        - { path: ^/api/messages, roles: ROLE_ADMIN}
 
 when@test:
     security:
