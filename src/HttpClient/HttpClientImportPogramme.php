@@ -32,7 +32,7 @@ class HttpClientImportPogramme
     {
         $response = $this->client->request(
             Request::METHOD_GET,
-            ''
+            '/api/sport-programs'
         );
         $content = $response->toArray();
 

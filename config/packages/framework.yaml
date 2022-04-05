@@ -25,8 +25,9 @@ framework:
             sms.client:
                 base_uri: '%env(EVOZON_WAREHOUSE_SMS_URI)%'
                 headers:
-                    - name: 'X-API-KEY'
-                      value: '%env(EVOZON_WAREHOUSE_SMS_API_KEY_VALUE)%'
+                    Content-Type: 'application/json'
+                    Accept: 'application/json'
+                    X-API-KEY: '%env(EVOZON_WAREHOUSE_SMS_API_KEY_VALUE)%'
         default_options:
             max_redirects: 3
 

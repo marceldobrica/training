@@ -36,12 +36,8 @@ class HttpClientSmsUser
 
         $this->client->request(
             Request::METHOD_POST,
-            '',
+            '/api/messages',
             [
-                'headers' => [
-                    'Content-Type: application/json',
-                    'Accept: application/json',
-                ],
                 'body' => $postJson,
             ]
         );
