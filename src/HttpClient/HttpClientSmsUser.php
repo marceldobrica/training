@@ -6,36 +6,44 @@ namespace App\HttpClient;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-class HttpClientImportPogramme
+class HttpClientSmsUser
 {
     private HttpClientInterface $client;
 
-    public function __construct(HttpClientInterface $programmeClient)
+    public function __construct(HttpClientInterface $smsClient)
     {
-        $this->client = $programmeClient;
+        $this->client = $smsClient;
     }
 
     /**
      * @throws TransportExceptionInterface
      * @throws ServerExceptionInterface
      * @throws RedirectionExceptionInterface
-     * @throws DecodingExceptionInterface
      * @throws ClientExceptionInterface
      */
-    public function fetchData(): array
+    public function sendSms(string $phone, string $message): void
     {
-        $response = $this->client->request(
-            Request::METHOD_GET,
-            ''
-        );
-        $content = $response->toArray();
+        $postData = [
+            'receiver' => $phone,
+            'body' => $message
+        ];
+        $postJson = json_encode($postData);
 
-        return $content['data'];
+        $this->client->request(
+            Request::METHOD_POST,
+            '',
+            [
+                'headers' => [
+                    'Content-Type: application/json',
+                    'Accept: application/json',
+                ],
+                'body' => $postJson,
+            ]
+        );
     }
 }

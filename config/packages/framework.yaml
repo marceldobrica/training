@@ -19,6 +19,14 @@ framework:
 
     # config/packages/framework.yaml
     http_client:
+        scoped_clients:
+            programme.client:
+                base_uri: '%env(EVOZON_WAREHOUSE_BASE_URI)%'
+            sms.client:
+                base_uri: '%env(EVOZON_WAREHOUSE_SMS_URI)%'
+                headers:
+                    - name: 'X-API-KEY'
+                      value: '%env(EVOZON_WAREHOUSE_SMS_API_KEY_VALUE)%'
         default_options:
             max_redirects: 3
 
