@@ -107,6 +107,7 @@ class UserController implements LoggerAwareInterface
         $decodedData = json_decode($data, true);
         if (!isset($decodedData['email'])) {
             $this->logger->warning('An atempt to post on recover without email');
+
             return new JsonResponse(
                 'You should provide an email',
                 Response::HTTP_BAD_REQUEST
@@ -116,6 +117,7 @@ class UserController implements LoggerAwareInterface
         $user = $this->userRepository->findOneBy(['email' => $decodedData['email']]);
         if (null === $user) {
             $this->logger->warning('No user for recover', ['email' => $decodedData['email']]);
+
             return new JsonResponse(
                 'No user with provided email',
                 Response::HTTP_BAD_REQUEST
