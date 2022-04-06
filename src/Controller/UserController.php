@@ -9,10 +9,10 @@ use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
@@ -32,20 +32,16 @@ class UserController implements LoggerAwareInterface
 
     private UserPasswordHasherInterface $passwordHasher;
 
-    private Security $security;
-
     public function __construct(
         EntityManagerInterface $entityManager,
         ValidatorInterface $validator,
         UserRepository $userRepository,
-        UserPasswordHasherInterface $passwordHasher,
-        Security $security
+        UserPasswordHasherInterface $passwordHasher
     ) {
         $this->entityManager = $entityManager;
         $this->validator = $validator;
         $this->userRepository = $userRepository;
         $this->passwordHasher = $passwordHasher;
-        $this->security = $security;
     }
 
     /**
@@ -57,7 +53,6 @@ class UserController implements LoggerAwareInterface
         if (count($errorsDto) > 0) {
             return $this->returnValidationErrors($errorsDto);
         }
-
         $this->logger->info('An userDto was validated');
 
         $user = User::createFromDto($userDto);
@@ -73,46 +68,62 @@ class UserController implements LoggerAwareInterface
         $this->entityManager->refresh($user);
 
         $this->logger->info('An user was registered and saved in DB');
-
         $savedUserDto = UserDto::createFromUser($user);
-
 
         return new JsonResponse($savedUserDto, Response::HTTP_CREATED);
     }
 
-//    /**
-//     * @Route(path="/{id}" methods={"DELETE"})
-//     */
-//    public function delete($id): Response
-//    {
-//        $user = $this->userRepository->findUserById($id);
-//
-//        if ($user) {
-//            $this->userRepository->remove($user);
-//            $this->logger->info('An user was deleted and removed from DB');
-//            return new JsonResponse();
-//        }
-//
-//
-//
-//        return new JsonResponse(['User with id' . $id . ' was deleted.'], Response::HTTP_OK);
-//    }
-//
-//    /**
-//     * @Route(path="/{id}" methods={"PUT"})
-//     */
-//    public function update($id): Response
-//    {
-//        $user = $this->userRepository->findUserById($id);
-//
-//        if ($user) {
-//            $this->userRepository->remove($user);
-//            $this->logger->info('An user was deleted and removed from DB');
-//            return new JsonResponse();
-//        }
-//
-//        $savedUserDto = UserDto::createFromUser($user);
-//
-//        return new JsonResponse($savedUserDto, Response::HTTP_CREATED);
-//    }
+    /**
+     * @Route(path="/{id}", methods={"DELETE"})
+     */
+    public function deleteUserAction($id): Response
+    {
+        $user = $this->userRepository->findOneBy(['id' => $id]);
+
+        if (null === $user) {
+            return new JsonResponse('No user found', Response::HTTP_BAD_REQUEST);
+        }
+        $this->entityManager->remove($user);
+        $this->entityManager->flush();
+        $this->logger->info('An user was soft-deleted');
+
+        return new JsonResponse(['User with id' . $id . ' was soft-deleted.'], Response::HTTP_OK);
+    }
+
+    /**
+     * @Route(path="/recover", methods={"POST"})
+     */
+    public function recoverUserAction(Request $request): Response
+    {
+        $data = $request->getContent();
+        $decodedData = json_decode($data, true);
+        if (!isset($decodedData['email'])) {
+            $this->logger->warning('An atempt to post on recover without email');
+
+            return new JsonResponse(
+                'You should provide an email',
+                Response::HTTP_BAD_REQUEST
+            );
+        }
+        $this->entityManager->getFilters()->disable('softdeleteable');
+        $user = $this->userRepository->findOneBy(['email' => $decodedData['email']]);
+        if (null === $user) {
+            $this->logger->warning('No user for recover', ['email' => $decodedData['email']]);
+
+            return new JsonResponse(
+                'No user with provided email',
+                Response::HTTP_BAD_REQUEST
+            );
+        }
+        $user->setDeletedAt(null);
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
+        $this->logger->info('An user was recovered', ['user' => $user]);
+        $this->entityManager->getFilters()->enable('softdeleteable');
+
+        return new JsonResponse(
+            'User with email ' . $decodedData['email'] . ' was un-deleted.',
+            Response::HTTP_OK
+        );
+    }
 }
