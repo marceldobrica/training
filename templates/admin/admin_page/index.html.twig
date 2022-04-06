@@ -6,25 +6,25 @@
 
 <div class="container">
     <div class="mx-auto" style="width: 500px;">
-        <h1>Hello {{ user.firstName }} {{ user.lastName }}! ✅</h1>
+        <h1>Hello {{ app.user.firstName }} {{ app.user.lastName }}! ✅</h1>
 
-        <h3>Wellcome to our admin area!</h3>
+        <h3>Welcome to our admin area!</h3>
 
         You are recorded in our database as:
         <dl class="row">
             <dd class="col-sm-3">First name:</dd>
-            <dt class="col-sm-9">{{ user.firstName }}</dt>
+            <dt class="col-sm-9">{{ app.user.firstName }}</dt>
             <dd class="col-sm-3">Last name:</dd>
-            <dt class="col-sm-9">{{ user.lastName }}</dt>
+            <dt class="col-sm-9">{{ app.user.lastName }}</dt>
             <dd class="col-sm-3">ROLES</dd>
             <dt class="col-sm-9"><ul>
-                    {% for role in user.roles %}
+                    {% for role in app.user.roles %}
                         <li>{{ role }}</li>
                     {% endfor %}
                 </ul>
             </dt>
             <dd class="col-sm-3">email</dd>
-            <dt class="col-sm-9">{{ user.email }}</dt>
+            <dt class="col-sm-9">{{ app.user.email }}</dt>
         </dl>
     </div>
 </div>
