@@ -81,14 +81,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Uuid $token;
 
     /**
-     * @ORM\Column(type="datetime", name="deletedAt")
+     * @ORM\Column(type="datetime", name="deletedAt", nullable=true)
      */
     private ?\DateTimeInterface $deletedAt;
 
     /**
-     * @ORM\Column(type="string", length=10)
+     * @ORM\Column(type="string", length=10, nullable=true)
      */
-    private $phone;
+    private ?string $phone;
 
     public function getToken(): Uuid
     {
@@ -158,9 +158,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getRoles(): array
     {
         $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
-        $roles[] = 'ROLE_USER';
-
+        if (empty($roles)) {
+            $roles[] = 'ROLE_USER';
+        }
         return array_unique($roles);
     }
 

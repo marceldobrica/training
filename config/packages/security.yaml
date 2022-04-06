@@ -32,6 +32,15 @@ security:
             provider: all_users
             http_basic:
                 realm: Secured Area
+        admin:
+            pattern: ^/admin
+            provider: all_users
+            form_login:
+                login_path: app_admin_login
+                check_path: app_admin_login
+            logout:
+                path: app_admin_logout
+                target: app_admin
         main:
             lazy: true
             stateless: true
@@ -44,6 +53,8 @@ security:
                     - App\Security\TokenAuthenticator
 
     access_control:
+        - { path: ^/admin/login, roles: PUBLIC_ACCESS }
+        - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/api/user, roles: PUBLIC_ACCESS }
         - { path: ^/api/login, roles: PUBLIC_ACCESS }
         - { path: ^/api/admin, roles: ROLE_ADMIN }

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Welcome!{% endblock %}</title>
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
+        {# Run `composer require symfony/webpack-encore-bundle` to start using Symfony UX #}
+        {% block stylesheets %}
+            {{ encore_entry_link_tags('app') }}
+        {% endblock %}
+
+        {% block javascripts %}
+            {{ encore_entry_script_tags('app') }}
+        {% endblock %}
+    </head>
+    <body class="d-flex flex-column min-vh-100">
+        {% block navbar %}
+            <div class="container">
+                <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                    <a class="navbar-brand" href="#">Navbar</a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarNav">
+                        <ul class="navbar-nav">
+                            <li class="nav-item active">
+                                <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">Features</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">Pricing</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link disabled" href="#">Disabled</a>
+                            </li>
+                        </ul>
+                        <ul class="navbar-nav float-right">
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ path('app_admin_logout') }}">Logout</a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+        {% endblock %}
+        <main class="flex-shrink-0 vh-75">
+            {% block body %}{% endblock %}
+        </main>
+
+        {% block footer %}
+            <footer class="footer mt-auto py-3 bg-light">
+                <div class="container">
+                    <span class="text-muted">What a nice footer</span>
+                </div>
+            </footer>
+        {% endblock %}
+    </body>
+</html>
