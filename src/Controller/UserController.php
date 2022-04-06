@@ -13,7 +13,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
@@ -33,20 +32,16 @@ class UserController implements LoggerAwareInterface
 
     private UserPasswordHasherInterface $passwordHasher;
 
-    private Security $security;
-
     public function __construct(
         EntityManagerInterface $entityManager,
         ValidatorInterface $validator,
         UserRepository $userRepository,
-        UserPasswordHasherInterface $passwordHasher,
-        Security $security
+        UserPasswordHasherInterface $passwordHasher
     ) {
         $this->entityManager = $entityManager;
         $this->validator = $validator;
         $this->userRepository = $userRepository;
         $this->passwordHasher = $passwordHasher;
-        $this->security = $security;
     }
 
     /**
@@ -58,7 +53,6 @@ class UserController implements LoggerAwareInterface
         if (count($errorsDto) > 0) {
             return $this->returnValidationErrors($errorsDto);
         }
-
         $this->logger->info('An userDto was validated');
 
         $user = User::createFromDto($userDto);
@@ -74,9 +68,7 @@ class UserController implements LoggerAwareInterface
         $this->entityManager->refresh($user);
 
         $this->logger->info('An user was registered and saved in DB');
-
         $savedUserDto = UserDto::createFromUser($user);
-
 
         return new JsonResponse($savedUserDto, Response::HTTP_CREATED);
     }
@@ -86,13 +78,13 @@ class UserController implements LoggerAwareInterface
      */
     public function deleteUserAction($id): Response
     {
-        $user = $this->userRepository->findUserById($id);
+        $user = $this->userRepository->findOneBy(['id' => $id]);
 
         if (null === $user) {
             return new JsonResponse('No user found', Response::HTTP_BAD_REQUEST);
         }
-        $this->userRepository->remove($user);
-        $this->userRepository->add($user);
+        $this->entityManager->remove($user);
+        $this->entityManager->flush();
         $this->logger->info('An user was soft-deleted');
 
         return new JsonResponse(['User with id' . $id . ' was soft-deleted.'], Response::HTTP_OK);
@@ -101,7 +93,7 @@ class UserController implements LoggerAwareInterface
     /**
      * @Route(path="/recover", methods={"POST"})
      */
-    public function unDeleteUserAction(Request $request): Response
+    public function recoverUserAction(Request $request): Response
     {
         $data = $request->getContent();
         $decodedData = json_decode($data, true);
@@ -124,7 +116,8 @@ class UserController implements LoggerAwareInterface
             );
         }
         $user->setDeletedAt(null);
-        $this->userRepository->add($user);
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
         $this->logger->info('An user was recovered', ['user' => $user]);
         $this->entityManager->getFilters()->enable('softdeleteable');
 
@@ -133,23 +126,4 @@ class UserController implements LoggerAwareInterface
             Response::HTTP_OK
         );
     }
-
-//
-//    /**
-//     * @Route(path="/{id}" methods={"PUT"})
-//     */
-//    public function update($id): Response
-//    {
-//        $user = $this->userRepository->findUserById($id);
-//
-//        if ($user) {
-//            $this->userRepository->remove($user);
-//            $this->logger->info('An user was deleted and removed from DB');
-//            return new JsonResponse();
-//        }
-//
-//        $savedUserDto = UserDto::createFromUser($user);
-//
-//        return new JsonResponse($savedUserDto, Response::HTTP_CREATED);
-//    }
 }
