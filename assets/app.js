@@ -11,8 +11,9 @@ import './styles/app.css';
 // start the Stimulus application
 import './bootstrap';
 
-const $ = require('jquery');
+import $ from 'jquery';
+
 // this "modifies" the jquery module: adding behavior to it
 // the bootstrap module doesn't export/return anything
 
-import '../node_modules/bootstrap/dist/js/bootstrap';
+import '../node_modules/bootstrap/dist/js/bootstrap.bundle.min';
