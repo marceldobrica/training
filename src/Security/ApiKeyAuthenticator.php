@@ -17,7 +17,6 @@ use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPasspor
 
 class ApiKeyAuthenticator extends AbstractAuthenticator
 {
-
     public function supports(Request $request): ?bool
     {
         return $request->headers->has('X-AUTH-TOKEN');
