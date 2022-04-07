@@ -48,9 +48,8 @@ security:
             json_login:
                 check_path: api_login
                 username_path: email
-            guard:
-                authenticators:
-                    - App\Security\TokenAuthenticator
+            custom_authenticators:
+                - App\Security\ApiKeyAuthenticator
 
     access_control:
         - { path: ^/admin/login, roles: PUBLIC_ACCESS }
