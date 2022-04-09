@@ -86,4 +86,16 @@ class ProgrammeRepository extends ServiceEntityRepository
 
         return $query->getResult();
     }
+
+    public function setTrainerNull($id): void
+    {
+        $this->_em
+            ->createQueryBuilder()
+            ->update('App:Programme', 'p')
+            ->set('p.trainer', 'NULL')
+            ->where('p.trainer = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->execute();
+    }
 }
