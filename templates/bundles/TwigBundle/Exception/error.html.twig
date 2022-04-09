@@ -1,0 +1,14 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block body %}
+    <div class="container">
+        <h1> Error!</h1>
+
+        <h3>The server returned an error: {{ status_code }}</h3>
+        <h4>Error message is {{ status_text }}</h4>
+
+        <p>If you think that is not normal behaviour please contact us.</p>
+        <p>Meanwhile you may continue using our site returnig to our admin home page</p>
+        <p class="mt-5"><a class="btn-sm btn-info" href="{{ path('app_admin') }}">Return to admin homepage</a></p>
+    </div>
+{% endblock %}
