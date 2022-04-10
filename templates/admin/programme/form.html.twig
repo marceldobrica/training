@@ -1,0 +1,16 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Programme form{% endblock %}
+
+{% block body %}
+    <div class="container-md m-5">
+        {% if  form | default() %}
+            <h3>Please enter your new programme bellow:</h3>
+            {{ form(form) }}
+        {% else %}
+
+            <h3>Ce cauti aici.....!</h3>
+            <h5>From now you may login with your new password!</h5>
+        {% endif %}
+    </div>
+{% endblock %}

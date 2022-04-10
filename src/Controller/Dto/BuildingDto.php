@@ -20,12 +20,15 @@ class BuildingDto
      */
     public \DateTime $endTime;
 
+    public string $address;
+
     public static function createFromBuilding(Building $building): self
     {
         $dto = new self();
         $dto->id = $building->getId();
         $dto->startTime = $building->getStartTime();
         $dto->endTime = $building->getEndTime();
+        $dto->address = $building->address;
 
         return $dto;
     }

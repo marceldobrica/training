@@ -62,4 +62,9 @@ class Room
 
         return $room;
     }
+
+    public function __toString()
+    {
+        return $this->name;
+    }
 }
