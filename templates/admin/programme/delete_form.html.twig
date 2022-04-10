@@ -1,0 +1,25 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Hello {{ app.user.firstName }}!{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h2>Are you sure you want to delete following programme?</h2>
+        <dl class="row">
+            <dd class="col-sm-3">First name:</dd>
+            <dt class="col-sm-9">{{ user.firstName }}</dt>
+            <dd class="col-sm-3">Last name:</dd>
+            <dt class="col-sm-9">{{ user.lastName }}</dt>
+            <dd class="col-sm-3">ROLES</dd>
+            <dt class="col-sm-9"><ul>
+                    {% for role in user.roles %}
+                        <li>{{ role }}</li>
+                    {% endfor %}
+                </ul>
+            </dt>
+            <dd class="col-sm-3">email</dd>
+            <dt class="col-sm-9">{{ user.email }}</dt>
+        </dl>
+        {{ form(form) }}
+    </div>
+{% endblock %}

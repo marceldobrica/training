@@ -59,7 +59,7 @@ class Programme
 
     /**
      * @ORM\ManyToOne(targetEntity="Room")
-     * @ORM\JoinColumn(name="room_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="room_id", referencedColumnName="id", nullable=true)
      * @Assert\NotBlank
      * @Groups ("api:programme:all")
      */
@@ -192,5 +192,12 @@ class Programme
         $programme->maxParticipants = $programmeDto->maxParticipants;
 
         return $programme;
+    }
+
+    public function __toString()
+    {
+        return $this->name . ' - ' . $this->startDate->format('d.m.Y H:i') . ' - ' . $this->endDate->format(
+            'd.m.Y H:i'
+        );
     }
 }
