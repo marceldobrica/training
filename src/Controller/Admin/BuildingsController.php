@@ -47,7 +47,6 @@ class BuildingsController extends AbstractController
         $building = new Building();
         $form = $this->createForm(BuildingType::class, $building);
         $form->handleRequest($request);
-
         if ($form->isSubmitted() && $form->isValid()) {
             $building = $form->getData();
             $this->entityManager->persist($building);
@@ -73,7 +72,6 @@ class BuildingsController extends AbstractController
         $building = $this->buildingRepository->findOneBy(['id' => $id]);
         $form = $this->createForm(DeleteCancelType::class);
         $form->handleRequest($request);
-
         if ($form->isSubmitted() && $form->isValid()) {
             if ($form->get('delete')->isClicked()) {
                 $this->entityManager->remove($building);
@@ -101,10 +99,8 @@ class BuildingsController extends AbstractController
         $building = $this->buildingRepository->findOneBy(['id' => $id]);
         $form = $this->createForm(BuildingType::class, $building);
         $form->handleRequest($request);
-
         if ($form->isSubmitted() && $form->isValid()) {
             $building = $form->getData();
-
             $this->entityManager->persist($building);
             $this->entityManager->flush();
 

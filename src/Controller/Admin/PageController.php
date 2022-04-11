@@ -12,7 +12,7 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 class PageController extends AbstractController
 {
     /**
-     * @Route("/admin", name="app_admin")
+     * @Route("/admin", name="app_admin", methods={"GET"})
      */
     public function showUserAction(AuthenticationUtils $authenticationUtils): Response
     {

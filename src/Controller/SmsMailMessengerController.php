@@ -27,7 +27,7 @@ class SmsMailMessengerController extends AbstractController
     }
 
     /**
-     * @Route ("/api/messages", methods={"POST"}, name="app_messages_mail_sms")
+     * @Route ("/api/messages", name="app_messages_mail_sms", methods={"POST"})
      */
     public function sendSmsMailAction(MessageBusInterface $bus): Response
     {

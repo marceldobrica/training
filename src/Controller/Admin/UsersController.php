@@ -2,7 +2,6 @@
 
 namespace App\Controller\Admin;
 
-use App\Controller\ReturnValidationErrorsTrait;
 use App\Entity\Programme;
 use App\Entity\User;
 use App\Form\Type\DeleteCancelType;
@@ -74,7 +73,6 @@ class UsersController extends AbstractController
             $user->setPassword($this->passwordHasher->hashPassword($user, $user->getPassword()));
             $this->entityManager->persist($user);
             $this->entityManager->flush();
-
             $this->addFlash(
                 'success',
                 'You have created a new user!'
@@ -101,7 +99,6 @@ class UsersController extends AbstractController
             if ($form->get('delete')->isClicked()) {
                 $this->entityManager->remove($user);
                 $this->entityManager->flush();
-
                 $this->addFlash(
                     'warning',
                     'You have deleted the user with id=' . $id . '!'
@@ -137,7 +134,6 @@ class UsersController extends AbstractController
             }
             $this->entityManager->persist($user);
             $this->entityManager->flush();
-
             $this->addFlash(
                 'info',
                 'You have updated the user with id=' . $id . '!'

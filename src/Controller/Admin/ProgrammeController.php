@@ -31,7 +31,7 @@ class ProgrammeController extends AbstractController
     }
 
     /**
-     * @Route("/admin/programme", name="app_admin_programme")
+     * @Route("/admin/programme", name="app_admin_programme", methods={"GET"})
      */
     public function showProgrammesAction(Request $request): Response
     {
@@ -53,7 +53,7 @@ class ProgrammeController extends AbstractController
     }
 
     /**
-     * @Route("/admin/programme/add", name="app_admin_programme_add")
+     * @Route("/admin/programme/add", name="app_admin_programme_add", methods={"GET", "POST"})
      */
     public function addProgrammeAction(Request $request): Response
     {
@@ -62,10 +62,8 @@ class ProgrammeController extends AbstractController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $programme = $form->getData();
-
             $this->entityManager->persist($programme);
             $this->entityManager->flush();
-
             $this->addFlash(
                 'success',
                 'You have created a new programme!'
@@ -80,7 +78,7 @@ class ProgrammeController extends AbstractController
     }
 
     /**
-     * @Route("/admin/programme/delete/{id}", name="app_admin_programme_delete")
+     * @Route("/admin/programme/delete/{id}", name="app_admin_programme_delete", methods={"GET", "POST"})
      */
     public function deleteProgrammeAction(Request $request, $id): Response
     {
@@ -107,7 +105,7 @@ class ProgrammeController extends AbstractController
     }
 
     /**
-     * @Route("/admin/programme/update/{id}", name="app_admin_programme_update")
+     * @Route("/admin/programme/update/{id}", name="app_admin_programme_update", methods={"GET", "POST"})
      */
     public function updateProgrammeAction(Request $request, $id): Response
     {
@@ -116,10 +114,8 @@ class ProgrammeController extends AbstractController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $programme = $form->getData();
-
             $this->entityManager->persist($programme);
             $this->entityManager->flush();
-
             $this->addFlash(
                 'info',
                 'You have updated the programme with id=' . $id . '!'
