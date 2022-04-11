@@ -16,6 +16,6 @@ class PageController extends AbstractController
      */
     public function showUserAction(AuthenticationUtils $authenticationUtils): Response
     {
-        return $this->render('admin/admin_page/index.html.twig', []);
+        return $this->render('admin/main_page/index.html.twig', []);
     }
 }

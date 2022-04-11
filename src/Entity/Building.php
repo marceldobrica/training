@@ -2,11 +2,14 @@
 
 namespace App\Entity;
 
+use App\Repository\BuildingRepository;
 use App\Controller\Dto\BuildingDto;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass=BuildingRepository::class)
+ * @ORM\Table (name="building")
  */
 class Building
 {
@@ -26,6 +29,12 @@ class Building
      * @ORM\Column(type="datetime")
      */
     private \DateTime $endTime;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     * @Assert\Regex("/^[\p{Lu}].+/")
+     */
+    public string $address = 'Online';
 
     public function getId(): int
     {
@@ -63,5 +72,10 @@ class Building
         $building->setEndTime($buildingDto->endTime);
 
         return $building;
+    }
+
+    public function __toString()
+    {
+        return $this->address;
     }
 }
