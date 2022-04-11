@@ -18,21 +18,37 @@ class ProgrammeController extends AbstractController
 
     private EntityManagerInterface $entityManager;
 
-    public function __construct(ProgrammeRepository $programmeRepository, EntityManagerInterface $entityManager)
-    {
+    private int $articlesOnPage;
+
+    public function __construct(
+        ProgrammeRepository $programmeRepository,
+        EntityManagerInterface $entityManager,
+        string $articlesOnPage
+    ) {
         $this->programmeRepository = $programmeRepository;
         $this->entityManager = $entityManager;
+        $this->articlesOnPage = intval($articlesOnPage);
     }
 
     /**
      * @Route("/admin/programme", name="app_admin_programme")
      */
-    public function showProgrammesAction(): Response
+    public function showProgrammesAction(Request $request): Response
     {
-        $programmes = $this->programmeRepository->findAll();
+        $currentPage = $request->query->get('page', 1);
+        $pageSize = $request->query->get('size', $this->articlesOnPage);
+        $nrProgrammes = $this->programmeRepository->countProgrammes();
+        $currentPosition = ($currentPage - 1) * $pageSize;
+        $nextPage = ($currentPosition + $pageSize < $nrProgrammes) ? $currentPage + 1 : $currentPage;
+        $previousPage = ($currentPosition >= $pageSize) ?   $currentPage - 1 : $currentPage;
+        $programmes = $this->programmeRepository->findAllPaginated($currentPage, $pageSize);
 
         return $this->render('admin/programme/index.html.twig', [
-            'programmes' => $programmes
+            'programmes' => $programmes,
+            'previous_page' => $previousPage,
+            'next_page' => $nextPage,
+            'current_page' => $currentPage,
+            'page_size' => $pageSize,
         ]);
     }
 

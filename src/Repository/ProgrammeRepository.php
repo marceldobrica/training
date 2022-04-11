@@ -86,4 +86,15 @@ class ProgrammeRepository extends ServiceEntityRepository
 
         return $query->getResult();
     }
+
+    public function countProgrammes(): int
+    {
+        $query = $this->_em
+            ->createQueryBuilder()
+            ->select('count(p.id)')
+            ->from('App:Programme', 'p')
+            ->getQuery();
+
+        return intval($query->getScalarResult()[0][1]);
+    }
 }

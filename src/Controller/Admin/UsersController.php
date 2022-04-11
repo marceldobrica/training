@@ -15,17 +15,12 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class UsersController extends AbstractController
 {
-    use ReturnValidationErrorsTrait;
-
     private UserRepository $userRepository;
 
     private EntityManagerInterface $entityManager;
-
-    private ValidatorInterface $validator;
 
     private UserPasswordHasherInterface $passwordHasher;
 
@@ -34,13 +29,11 @@ class UsersController extends AbstractController
     public function __construct(
         UserRepository $userRepository,
         EntityManagerInterface $entityManager,
-        ValidatorInterface $validator,
         UserPasswordHasherInterface $passwordHasher,
         string $articlesOnPage
     ) {
         $this->userRepository = $userRepository;
         $this->entityManager = $entityManager;
-        $this->validator = $validator;
         $this->passwordHasher = $passwordHasher;
         $this->articlesOnPage = intval($articlesOnPage);
     }
@@ -75,11 +68,9 @@ class UsersController extends AbstractController
         $user = new User();
         $form = $this->createForm(UserType::class, $user);
         $form->handleRequest($request);
-
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var User $user */
             $user = $form->getData();
-
             $user->setPassword($this->passwordHasher->hashPassword($user, $user->getPassword()));
             $this->entityManager->persist($user);
             $this->entityManager->flush();
@@ -104,11 +95,8 @@ class UsersController extends AbstractController
     public function deleteUserAction(Request $request, $id): Response
     {
         $user = $this->userRepository->findOneBy(['id' => $id]);
-
         $form = $this->createForm(DeleteCancelType::class);
-
         $form->handleRequest($request);
-
         if ($form->isSubmitted() && $form->isValid()) {
             if ($form->get('delete')->isClicked()) {
                 $this->entityManager->remove($user);
@@ -135,15 +123,9 @@ class UsersController extends AbstractController
     public function updateUserAction(Request $request, $id): Response
     {
         $user = $this->userRepository->findOneBy(['id' => $id]);
-
-
         $form = $this->createForm(UserModifyType::class, $user);
-
-
         $form->handleRequest($request);
-
         if ($form->isSubmitted() && $form->isValid()) {
-
             /** @var User $user */
             $user = $form->getData();
             $user->setRoles(array_values($user->getRoles()));
