@@ -3,7 +3,6 @@
 namespace App\Controller\Admin;
 
 use App\Controller\ReturnValidationErrorsTrait;
-
 use App\Entity\Programme;
 use App\Entity\User;
 use App\Form\Type\DeleteCancelType;
@@ -105,7 +104,6 @@ class UsersController extends AbstractController
                     'warning',
                     'You have deleted the user with id=' . $id . '!'
                 );
-
             }
 
             return $this->redirectToRoute('app_admin_users');
