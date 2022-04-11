@@ -39,4 +39,29 @@ class UserRepository extends ServiceEntityRepository
             $this->_em->flush();
         }
     }
+
+    public function findAllPaginated($currentPage, $pageSize): array
+    {
+        $currentPosition = ($currentPage - 1) * $pageSize;
+        $query = $this->_em
+            ->createQueryBuilder()
+            ->select('u')
+            ->from('App:User', 'u')
+            ->getQuery()
+            ->setFirstResult($currentPosition)
+            ->setMaxResults($pageSize);
+
+        return $query->getResult();
+    }
+
+    public function countUser(): int
+    {
+        $query = $this->_em
+            ->createQueryBuilder()
+            ->select('count(u.id)')
+            ->from('App:User', 'u')
+            ->getQuery();
+
+        return intval($query->getScalarResult()[0][1]);
+    }
 }

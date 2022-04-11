@@ -4,37 +4,48 @@
 
 {% block body %}
 
-<div class="container">
-    <h1>Hello {{ app.user.firstName }}! ✅</h1>
+    <div class="container">
+        <h1>Hello {{ app.user.firstName }}! ✅</h1>
 
-    These are users from DB:
-    <a href="{{ path('app_admin_users_add') }}" class="btn btn-primary btn-sm">Add new user</a>
-    <table class="table table-striped table-responsive table-bordered">
-        <tr>
-            <th>id</th>
-            <th>email</th>
-            <th>Name</th>
-            <th>Phone</th>
-            <th>ROLES</th>
-            <th>ACTIONS</th>
-        </tr>
-        {% for user in users %}
+        These are users from DB:
+        <a href="{{ path('app_admin_users_add') }}" class="btn btn-primary btn-sm">Add new user</a>
+        <div class="mt-1">
+            {% if previous_page != current_page %}
+                <a href="{{ path('app_admin_users', {'page' : previous_page, 'size' : page_size }) }}" class="btn btn-primary btn-sm">
+                    < Previous page
+                </a>
+            {% endif %}
+            {% if next_page != current_page %}
+                <a href="{{ path('app_admin_users', {'page' : next_page, 'size' : page_size }) }}" class="btn btn-primary btn-sm">Next page></a>
+            {% endif %}
+        </div>
+
+        <table class="table table-striped table-responsive table-bordered">
             <tr>
-                <td>{{ user.id }}</td>
-                <td>{{ user.email }}</td>
-                <td>{{ user.firstName }} {{ user.lastName }}</td>
-                <td>{{ user.phone }}</td>
-                <td>
-                    {%  for role in user.roles %}
-                        {{ role }}
-                    {% endfor %}
-                </td>
-                <td>
-                    <a href="{{ path('app_admin_users_delete', {'id': user.id}) }}" class="btn btn-danger btn-sm">DELETE</a>
-                    <a href="{{ path('app_admin_users_update', {'id': user.id}) }}" class="btn btn-warning btn-sm">UPDATE</a>
-                </td>
+                <th>id</th>
+                <th>email</th>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>ROLES</th>
+                <th>ACTIONS</th>
             </tr>
-        {% endfor %}
-    </table>
-</div>
+            {% for user in users %}
+                <tr>
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.firstName }} {{ user.lastName }}</td>
+                    <td>{{ user.phone }}</td>
+                    <td>
+                        {% for role in user.roles %}
+                            {{ role }}
+                        {% endfor %}
+                    </td>
+                    <td>
+                        <a href="{{ path('app_admin_users_delete', {'id': user.id}) }}" class="btn btn-danger btn-sm">DELETE</a>
+                        <a href="{{ path('app_admin_users_update', {'id': user.id}) }}" class="btn btn-warning btn-sm">UPDATE</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
 {% endblock %}

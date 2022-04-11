@@ -33,23 +33,35 @@ class UsersController extends AbstractController
         UserRepository $userRepository,
         EntityManagerInterface $entityManager,
         ValidatorInterface $validator,
-        UserPasswordHasherInterface $passwordHasher
+        UserPasswordHasherInterface $passwordHasher,
+        string $articlesOnPage
     ) {
         $this->userRepository = $userRepository;
         $this->entityManager = $entityManager;
         $this->validator = $validator;
         $this->passwordHasher = $passwordHasher;
+        $this->articlesOnPage = intval($articlesOnPage);
     }
 
     /**
      * @Route("/admin/users", name="app_admin_users", methods={"GET"})
      */
-    public function showUsersAction(): Response
+    public function showUsersAction(Request $request): Response
     {
-        $users = $this->userRepository->findAll();
+        $currentPage = $request->query->get('page', 1);
+        $pageSize = $request->query->get('size', $this->articlesOnPage);
+        $nrUsers = $this->userRepository->countUser();
+        $currentPosition = ($currentPage - 1) * $pageSize;
+        $nextPage = ($currentPosition + $pageSize < $nrUsers) ? $currentPage + 1 : $currentPage;
+        $previousPage = ($currentPosition >= $pageSize) ?   $currentPage - 1 : $currentPage;
+        $users = $this->userRepository->findAllPaginated($currentPage, $pageSize);
 
         return $this->render('admin/users/index.html.twig', [
-            'users' => $users
+            'users' => $users,
+            'previous_page' => $previousPage,
+            'next_page' => $nextPage,
+            'current_page' => $currentPage,
+            'page_size' => $pageSize,
         ]);
     }
 
