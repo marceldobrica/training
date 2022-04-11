@@ -29,6 +29,8 @@ class UsersController extends AbstractController
 
     private UserPasswordHasherInterface $passwordHasher;
 
+    private int $articlesOnPage;
+
     public function __construct(
         UserRepository $userRepository,
         EntityManagerInterface $entityManager,
