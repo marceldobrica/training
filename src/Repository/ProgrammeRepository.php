@@ -95,6 +95,6 @@ class ProgrammeRepository extends ServiceEntityRepository
             ->from('App:Programme', 'p')
             ->getQuery();
 
-        return intval($query->getScalarResult()[0][1]);
+        return (int) $query->getSingleScalarResult();
     }
 }

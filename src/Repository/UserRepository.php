@@ -62,6 +62,6 @@ class UserRepository extends ServiceEntityRepository
             ->from('App:User', 'u')
             ->getQuery();
 
-        return intval($query->getScalarResult()[0][1]);
+        return (int) $query->getSingleScalarResult();
     }
 }
