@@ -1,0 +1,27 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Hello {{ app.user.firstName }}!{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1>Hello {{ app.user.firstName }}! ✅</h1>
+
+    Most busiest days/hours/programms:
+    <table class="table table-striped table-responsive table-bordered">
+        <tr>
+            <th>Programme Name</th>
+            <th>Day</th>
+            <th>Hour</th>
+            <th>Number of participants</th>
+        </tr>
+        {% for result in results %}
+            <tr>
+                <td>{{ result.name }}</td>
+                <td>{{ result.day }}</td>
+                <td>{{ result.hour }}</td>
+                <td>{{ result.number }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}

@@ -68,7 +68,6 @@ class Programme
     /**
      * @ORM\ManyToMany(targetEntity="User", inversedBy="programmes")
      * @ORM\JoinTable(name="programmes_customers")
-     * @Assert\Collection
      */
     private Collection $customers;
 
