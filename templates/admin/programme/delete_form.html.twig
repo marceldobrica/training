@@ -1,0 +1,30 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Hello {{ app.user.firstName }}!{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h2>Are you sure you want to delete following programme?</h2>
+        <dl class="row">
+            <dd class="col-sm-3">Programme name:</dd>
+            <dt class="col-sm-9">{{ programme.name }}</dt>
+            <dd class="col-sm-3">Programme description:</dd>
+            <dt class="col-sm-9">{{ programme.description }}</dt>
+            <dd class="col-sm-3">Programme startDate:</dd>
+            <dt class="col-sm-9">{{ programme.startDate|date('d.m.Y H:i') }}</dt>
+            <dd class="col-sm-3">Programme endDate:</dd>
+            <dt class="col-sm-9">{{ programme.endDate|date('d.m.Y H:i') }}</dt>
+            <dd class="col-sm-3">Programme maxParticipants:</dd>
+            <dt class="col-sm-9">{{ programme.maxParticipants }}</dt>
+            <dd class="col-sm-3">Programme room:</dd>
+            <dt class="col-sm-9">{{ programme.room }}</dt>
+
+        </dl>
+        <div class="input-group">
+            {{ form_start(form) }}
+            {{ form_widget(form.delete, { 'attr': {'class': 'btn btn-danger d-inline'} }) }}
+            {{ form_widget(form.cancel, { 'attr': {'class': 'btn btn-info d-inline'} }) }}
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}

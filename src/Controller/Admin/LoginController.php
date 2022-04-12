@@ -7,10 +7,13 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
+/**
+ * @Route("/admin")
+ */
 class LoginController extends AbstractController
 {
     /**
-     * @Route("/admin/login", name="app_admin_login")
+     * @Route("/login", name="admin_login", methods={"GET", "POST"})
      */
     public function adminLoginAction(AuthenticationUtils $authenticationUtils): Response
     {
@@ -24,7 +27,7 @@ class LoginController extends AbstractController
     }
 
     /**
-     * @Route("/admin/logout", name="app_admin_logout")
+     * @Route("/logout", name="admin_logout", methods={"GET"})
      */
     public function adminLogoutAction(): void
     {

@@ -36,11 +36,11 @@ security:
             pattern: ^/admin
             provider: all_users
             form_login:
-                login_path: app_admin_login
-                check_path: app_admin_login
+                login_path: admin_login
+                check_path: admin_login
             logout:
-                path: app_admin_logout
-                target: app_admin
+                path: admin_logout
+                target: admin
         main:
             lazy: true
             stateless: true

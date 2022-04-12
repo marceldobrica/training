@@ -73,17 +73,26 @@ class ProgrammeRepository extends ServiceEntityRepository
         return $query->getQuery()->getResult();
     }
 
-    public function findAllPaginated($currentPage, $articlesOnPage): array
+    public function findAllPaginated(int $currentPage, int $articlesOnPage): array
     {
         $currentPosition = ($currentPage - 1) * $articlesOnPage;
         $query = $this->_em
             ->createQueryBuilder()
             ->select('p')
             ->from('App:Programme', 'p')
-            ->getQuery()
-            ->setFirstResult($currentPosition)
-            ->setMaxResults($articlesOnPage);
+            ->getQuery();
 
-        return $query->getResult();
+        return $query->setFirstResult($currentPosition) ->setMaxResults($articlesOnPage)->getResult();
+    }
+
+    public function countProgrammes(): int
+    {
+        $query = $this->_em
+            ->createQueryBuilder()
+            ->select('count(p.id)')
+            ->from('App:Programme', 'p')
+            ->getQuery();
+
+        return (int) $query->getSingleScalarResult();
     }
 }

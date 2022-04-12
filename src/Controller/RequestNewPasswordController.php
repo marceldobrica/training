@@ -41,7 +41,7 @@ class RequestNewPasswordController extends AbstractController implements LoggerA
     }
 
     /**
-     * @Route("request-password", name="app_request_password")
+     * @Route("request-password", name="app_request_password", methods={"GET", "POST"})
      */
     public function requestResetPasswordAction(Request $request): Response
     {
