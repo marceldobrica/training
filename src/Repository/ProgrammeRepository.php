@@ -107,4 +107,14 @@ class ProgrammeRepository extends ServiceEntityRepository
             ->getQuery()
             ->execute();
     }
+
+    public function returnBusiestDate(): array
+    {
+        $conn = $this->_em->getConnection();
+        $sql = 'SELECT DATE(start_date) as day, HOUR(start_date) AS hour, COUNT(programmes_customers.user_id) AS number 
+                FROM programme INNER JOIN programmes_customers ON programme.id = programmes_customers.programme_id
+                GROUP BY hour, day ORDER BY number DESC LIMIT 0,5';
+        $stmt = $conn->prepare($sql);
+        return $stmt->executeQuery()->fetchAllAssociative();
+    }
 }
