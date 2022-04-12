@@ -29,11 +29,11 @@ class SqlReportController extends AbstractController
     public function showReportAction(): Response
     {
         $conn = $this->entityManager->getConnection();
-        $sql = "select programme.name as name, DAY(start_date) as day, Hour(start_date) as hour, " .
-            "count(user.id) as number from programme inner join programmes_customers " .
-            "on programme.id = programmes_customers.programme_id inner join user " .
-            "on programmes_customers.user_id = user.id group by programme.name, start_date " .
-            "order by number desc limit 0,5";
+        $sql = "SELECT programme.name AS name, DAY(start_date) AS day, HOUR(start_date) AS hour, " .
+            "COUNT(user.id) AS number FROM programme INNER JOIN programmes_customers " .
+            "ON programme.id = programmes_customers.programme_id INNER JOIN user " .
+            "ON programmes_customers.user_id = user.id GROUP BY programme.name, start_date " .
+            "ORDER BY number DESC LIMIT 0,5";
         $stmt = $conn->prepare($sql);
         $results = $stmt->executeQuery()->fetchAllAssociative();
 
