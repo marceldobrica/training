@@ -197,7 +197,7 @@ class Programme
     public function __toString(): string
     {
         return $this->name . ': ' . $this->startDate->format('d.m.Y H:i') . ' - ' . $this->endDate->format(
-                'd.m.Y H:i'
-            );
+            'd.m.Y H:i'
+        );
     }
 }
