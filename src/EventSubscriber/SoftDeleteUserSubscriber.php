@@ -31,6 +31,6 @@ class SoftDeleteUserSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $this->programmeRepository->setTrainerNull($user->getId());
+        $this->programmeRepository->removeTrainerWithIdFromProgrammes($user->getId());
     }
 }
