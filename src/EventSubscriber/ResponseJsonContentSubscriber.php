@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\EventSubscribers;
+namespace App\EventSubscriber;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ViewEvent;
 use Symfony\Component\Serializer\SerializerInterface;
 
-class ResponseGigelContentSubscriber implements EventSubscriberInterface
+class ResponseJsonContentSubscriber implements EventSubscriberInterface
 {
     private SerializerInterface $serializer;
 
@@ -29,12 +29,12 @@ class ResponseGigelContentSubscriber implements EventSubscriberInterface
     public function encodeResponseData(ViewEvent $event): void
     {
         $accept = $event->getRequest()->headers->get('Accept');
-        if ('application/gigel' === $accept) {
+        if ('application/json' === $accept) {
             $event->setResponse(
                 new JsonResponse(
                     $this->serializer->serialize(
                         $event->getControllerResult(),
-                        'gigel',
+                        'json',
                         ['groups' => 'api:programme:all']
                     ),
                     Response::HTTP_OK,

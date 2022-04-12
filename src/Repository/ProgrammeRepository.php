@@ -95,4 +95,16 @@ class ProgrammeRepository extends ServiceEntityRepository
 
         return (int) $query->getSingleScalarResult();
     }
+
+    public function removeTrainerWithIdFromProgrammes(int $id): void
+    {
+        $this->_em
+            ->createQueryBuilder()
+            ->update('App:Programme', 'p')
+            ->set('p.trainer', 'NULL')
+            ->where('p.trainer = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->execute();
+    }
 }
