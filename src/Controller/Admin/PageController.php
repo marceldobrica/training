@@ -9,10 +9,13 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
+/**
+ * @Route("/admin")
+ */
 class PageController extends AbstractController
 {
     /**
-     * @Route("/admin", name="app_admin", methods={"GET"})
+     * @Route(name="admin", methods={"GET"})
      */
     public function showUserAction(AuthenticationUtils $authenticationUtils): Response
     {

@@ -8,16 +8,16 @@
         <h1>Hello {{ app.user.firstName }}! ✅</h1>
 
         These are users from DB:
-        <a href="{{ path('app_admin_users_add') }}" class="btn btn-primary btn-sm">Add new user</a>
+        <a href="{{ path('admin_users_add') }}" class="btn btn-primary btn-sm">Add new user</a>
         <div class="mt-1">
             {% if previous_page != current_page %}
-                <a href="{{ path('app_admin_users', {'page' : previous_page, 'size' : page_size }) }}"
+                <a href="{{ path('admin_users', {'page' : previous_page, 'size' : page_size }) }}"
                    class="btn btn-primary btn-sm">
                     < Previous page
                 </a>
             {% endif %}
             {% if next_page != current_page %}
-                <a href="{{ path('app_admin_users', {'page' : next_page, 'size' : page_size }) }}"
+                <a href="{{ path('admin_users', {'page' : next_page, 'size' : page_size }) }}"
                    class="btn btn-primary btn-sm">Next page></a>
             {% endif %}
         </div>
@@ -43,9 +43,9 @@
                         {% endfor %}
                     </td>
                     <td>
-                        <a href="{{ path('app_admin_users_delete', {'id': user.id}) }}"
+                        <a href="{{ path('admin_users_delete', {'id': user.id}) }}"
                            class="btn btn-danger btn-sm">DELETE</a>
-                        <a href="{{ path('app_admin_users_update', {'id': user.id}) }}"
+                        <a href="{{ path('admin_users_update', {'id': user.id}) }}"
                            class="btn btn-warning btn-sm">UPDATE</a>
                     </td>
                 </tr>

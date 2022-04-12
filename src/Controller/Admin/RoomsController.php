@@ -14,6 +14,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+/**
+ * @Route("/admin/rooms")
+ */
 class RoomsController extends AbstractController
 {
     private RoomRepository $roomRepository;
@@ -27,7 +30,7 @@ class RoomsController extends AbstractController
     }
 
     /**
-     * @Route("/admin/rooms", name="app_admin_rooms", methods={"GET"})
+     * @Route(name="admin_rooms", methods={"GET"})
      */
     public function showRoomsAction(): Response
     {
@@ -39,7 +42,7 @@ class RoomsController extends AbstractController
     }
 
     /**
-     * @Route("/admin/rooms/add", name="app_admin_rooms_add", methods={"GET", "POST"})
+     * @Route("/add", name="admin_rooms_add", methods={"GET", "POST"})
      */
     public function addRoomAction(Request $request): Response
     {
@@ -55,7 +58,7 @@ class RoomsController extends AbstractController
                 'You have created a new room!'
             );
 
-            return $this->redirectToRoute('app_admin_rooms');
+            return $this->redirectToRoute('admin_rooms');
         }
 
         return $this->renderForm('admin/rooms/form.html.twig', [
@@ -64,7 +67,7 @@ class RoomsController extends AbstractController
     }
 
     /**
-     * @Route("/admin/rooms/delete/{id}", name="app_admin_rooms_delete", methods={"GET", "POST"})
+     * @Route("/delete/{id}", name="admin_rooms_delete", methods={"GET", "POST"})
      */
     public function deleteRoomAction(Request $request, $id): Response
     {
@@ -76,12 +79,12 @@ class RoomsController extends AbstractController
                 $this->entityManager->remove($room);
                 $this->entityManager->flush();
                 $this->addFlash(
-                    'warning',
+                    'info',
                     'You have deleted the room with id=' . $id . '!'
                 );
             }
 
-            return $this->redirectToRoute('app_admin_rooms');
+            return $this->redirectToRoute('admin_rooms');
         }
 
         return $this->renderForm('admin/rooms/delete_form.html.twig', [
@@ -91,7 +94,7 @@ class RoomsController extends AbstractController
     }
 
     /**
-     * @Route("/admin/rooms/update/{id}", name="app_admin_rooms_update", methods={"GET", "POST"})
+     * @Route("/update/{id}", name="admin_rooms_update", methods={"GET", "POST"})
      */
     public function updateRoomAction(Request $request, $id): Response
     {
@@ -107,7 +110,7 @@ class RoomsController extends AbstractController
                 'You have updated the room with id=' . $id . '!'
             );
 
-            return $this->redirectToRoute('app_admin_rooms');
+            return $this->redirectToRoute('admin_rooms');
         }
 
         return $this->renderForm('admin/rooms/form.html.twig', [

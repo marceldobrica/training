@@ -12,6 +12,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+/**
+ * @Route("/admin/programmes")
+ */
 class ProgrammeController extends AbstractController
 {
     private ProgrammeRepository $programmeRepository;
@@ -31,7 +34,7 @@ class ProgrammeController extends AbstractController
     }
 
     /**
-     * @Route("/admin/programme", name="app_admin_programme", methods={"GET"})
+     * @Route(name="admin_programme", methods={"GET"})
      */
     public function showProgrammesAction(Request $request): Response
     {
@@ -53,7 +56,7 @@ class ProgrammeController extends AbstractController
     }
 
     /**
-     * @Route("/admin/programme/add", name="app_admin_programme_add", methods={"GET", "POST"})
+     * @Route("/add", name="admin_programme_add", methods={"GET", "POST"})
      */
     public function addProgrammeAction(Request $request): Response
     {
@@ -69,7 +72,7 @@ class ProgrammeController extends AbstractController
                 'You have created a new programme!'
             );
 
-            return $this->redirectToRoute('app_admin_programme');
+            return $this->redirectToRoute('admin_programme');
         }
 
         return $this->renderForm('admin/programme/form.html.twig', [
@@ -78,7 +81,7 @@ class ProgrammeController extends AbstractController
     }
 
     /**
-     * @Route("/admin/programme/delete/{id}", name="app_admin_programme_delete", methods={"GET", "POST"})
+     * @Route("/delete/{id}", name="admin_programme_delete", methods={"GET", "POST"})
      */
     public function deleteProgrammeAction(Request $request, $id): Response
     {
@@ -90,12 +93,12 @@ class ProgrammeController extends AbstractController
                 $this->entityManager->remove($programme);
                 $this->entityManager->flush();
                 $this->addFlash(
-                    'warning',
+                    'info',
                     'You have deleted the user with id=' . $id . '!'
                 );
             }
 
-            return $this->redirectToRoute('app_admin_programme');
+            return $this->redirectToRoute('admin_programme');
         }
 
         return $this->renderForm('admin/programme/delete_form.html.twig', [
@@ -105,7 +108,7 @@ class ProgrammeController extends AbstractController
     }
 
     /**
-     * @Route("/admin/programme/update/{id}", name="app_admin_programme_update", methods={"GET", "POST"})
+     * @Route("/update/{id}", name="admin_programme_update", methods={"GET", "POST"})
      */
     public function updateProgrammeAction(Request $request, $id): Response
     {
@@ -121,7 +124,7 @@ class ProgrammeController extends AbstractController
                 'You have updated the programme with id=' . $id . '!'
             );
 
-            return $this->redirectToRoute('app_admin_programme');
+            return $this->redirectToRoute('admin_programme');
         }
 
         return $this->renderForm('admin/programme/form.html.twig', [

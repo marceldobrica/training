@@ -15,6 +15,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
+/**
+ * @Route("/admin/users")
+ */
 class UsersController extends AbstractController
 {
     private UserRepository $userRepository;
@@ -38,7 +41,7 @@ class UsersController extends AbstractController
     }
 
     /**
-     * @Route("/admin/users", name="app_admin_users", methods={"GET"})
+     * @Route(name="admin_users", methods={"GET"})
      */
     public function showUsersAction(Request $request): Response
     {
@@ -60,7 +63,7 @@ class UsersController extends AbstractController
     }
 
     /**
-     * @Route("/admin/users/add", name="app_admin_users_add", methods={"GET", "POST"})
+     * @Route("/add", name="admin_users_add", methods={"GET", "POST"})
      */
     public function addUserAction(Request $request): Response
     {
@@ -78,8 +81,7 @@ class UsersController extends AbstractController
                 'You have created a new user!'
             );
 
-
-            return $this->redirectToRoute('app_admin_users');
+            return $this->redirectToRoute('admin_users');
         }
 
         return $this->renderForm('admin/users/form.html.twig', [
@@ -88,7 +90,7 @@ class UsersController extends AbstractController
     }
 
     /**
-     * @Route("/admin/users/delete/{id}", name="app_admin_users_delete", methods={"GET", "POST"})
+     * @Route("/delete/{id}", name="admin_users_delete", methods={"GET", "POST"})
      */
     public function deleteUserAction(Request $request, $id): Response
     {
@@ -105,7 +107,7 @@ class UsersController extends AbstractController
                 );
             }
 
-            return $this->redirectToRoute('app_admin_users');
+            return $this->redirectToRoute('admin_users');
         }
 
         return $this->renderForm('admin/users/delete_form.html.twig', [
@@ -115,7 +117,7 @@ class UsersController extends AbstractController
     }
 
     /**
-     * @Route("/admin/users/update/{id}", name="app_admin_users_update", methods={"GET", "POST"})
+     * @Route("/update/{id}", name="admin_users_update", methods={"GET", "POST"})
      */
     public function updateUserAction(Request $request, $id): Response
     {
@@ -139,7 +141,7 @@ class UsersController extends AbstractController
                 'You have updated the user with id=' . $id . '!'
             );
 
-            return $this->redirectToRoute('app_admin_users');
+            return $this->redirectToRoute('admin_users');
         }
 
         return $this->renderForm('admin/users/form.html.twig', [

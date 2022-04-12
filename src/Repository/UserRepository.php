@@ -40,18 +40,16 @@ class UserRepository extends ServiceEntityRepository
         }
     }
 
-    public function findAllPaginated($currentPage, $pageSize): array
+    public function findAllPaginated(int $currentPage, int $pageSize): array
     {
         $currentPosition = ($currentPage - 1) * $pageSize;
         $query = $this->_em
             ->createQueryBuilder()
             ->select('u')
             ->from('App:User', 'u')
-            ->getQuery()
-            ->setFirstResult($currentPosition)
-            ->setMaxResults($pageSize);
+            ->getQuery();
 
-        return $query->getResult();
+        return $query->setFirstResult($currentPosition) ->setMaxResults($pageSize)->getResult();
     }
 
     public function countUser(): int

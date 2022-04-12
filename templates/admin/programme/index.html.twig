@@ -8,16 +8,16 @@
         <h1>Hello {{ app.user.firstName }}! ✅</h1>
 
         This are recorded programmes:
-        <a href="{{ path('app_admin_programme_add') }}" class="btn btn-primary btn-sm">Add new programme</a>
+        <a href="{{ path('admin_programme_add') }}" class="btn btn-primary btn-sm">Add new programme</a>
         <div class="mt-1">
             {% if previous_page != current_page %}
-                <a href="{{ path('app_admin_programme', {'page' : previous_page, 'size' : page_size }) }}"
+                <a href="{{ path('admin_programme', {'page' : previous_page, 'size' : page_size }) }}"
                    class="btn btn-primary btn-sm">
                     < Previous page
                 </a>
             {% endif %}
             {% if next_page != current_page %}
-                <a href="{{ path('app_admin_programme', {'page' : next_page, 'size' : page_size }) }}"
+                <a href="{{ path('admin_programme', {'page' : next_page, 'size' : page_size }) }}"
                    class="btn btn-primary btn-sm">Next page></a>
             {% endif %}
         </div>
@@ -40,9 +40,9 @@
                     <td>{{ programme.maxParticipants }}</td>
                     <td>{{ programme.room }}</td>
                     <td>
-                        <a href="{{ path('app_admin_programme_delete', {'id': programme.id}) }}"
+                        <a href="{{ path('admin_programme_delete', {'id': programme.id}) }}"
                            class="btn btn-danger btn-sm">DELETE</a>
-                        <a href="{{ path('app_admin_programme_update', {'id': programme.id}) }}"
+                        <a href="{{ path('admin_programme_update', {'id': programme.id}) }}"
                            class="btn btn-warning btn-sm">UPDATE</a>
                     </td>
                 </tr>

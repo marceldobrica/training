@@ -74,7 +74,7 @@ class Building
         return $building;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->address;
     }

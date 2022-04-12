@@ -14,6 +14,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+/**
+ * @Route("/admin/buildings")
+ */
 class BuildingsController extends AbstractController
 {
     private BuildingRepository $buildingRepository;
@@ -28,7 +31,7 @@ class BuildingsController extends AbstractController
 
 
     /**
-     * @Route("/admin/buildings", name="app_admin_buildings", methods={"GET"})
+     * @Route(name="admin_buildings", methods={"GET"})
      */
     public function showBuildingsAction(): Response
     {
@@ -40,7 +43,7 @@ class BuildingsController extends AbstractController
     }
 
     /**
-     * @Route ("admin/buildings/add", name="app_admin_buildings_add", methods={"GET", "POST"})
+     * @Route ("/add", name="admin_buildings_add", methods={"GET", "POST"})
      */
     public function addBuildingAction(Request $request): Response
     {
@@ -56,7 +59,7 @@ class BuildingsController extends AbstractController
                 'You have created a new building!'
             );
 
-            return $this->redirectToRoute('app_admin_buildings');
+            return $this->redirectToRoute('admin_buildings');
         }
 
         return $this->renderForm('admin/buildings/form.html.twig', [
@@ -65,7 +68,7 @@ class BuildingsController extends AbstractController
     }
 
     /**
-     * @Route ("admin/buildings/delete/{id}", name="app_admin_buildings_delete", methods={"GET", "POST"})
+     * @Route ("/delete/{id}", name="admin_buildings_delete", methods={"GET", "POST"})
      */
     public function deleteBuildingAction(Request $request, $id): Response
     {
@@ -77,12 +80,12 @@ class BuildingsController extends AbstractController
                 $this->entityManager->remove($building);
                 $this->entityManager->flush();
                 $this->addFlash(
-                    'warning',
+                    'info',
                     'You have deleted the building with id=' . $id . '!'
                 );
             }
 
-            return $this->redirectToRoute('app_admin_buildings');
+            return $this->redirectToRoute('admin_buildings');
         }
 
         return $this->renderForm('admin/buildings/delete_form.html.twig', [
@@ -92,7 +95,7 @@ class BuildingsController extends AbstractController
     }
 
     /**
-     * @Route ("admin/buildings/update{id}", name="app_admin_buildings_update", methods={"GET", "POST"})
+     * @Route ("/update/{id}", name="admin_buildings_update", methods={"GET", "POST"})
      */
     public function updateBuildingAction(Request $request, $id): Response
     {
@@ -103,13 +106,12 @@ class BuildingsController extends AbstractController
             $building = $form->getData();
             $this->entityManager->persist($building);
             $this->entityManager->flush();
-
             $this->addFlash(
                 'info',
                 'You have updated the building with id=' . $id . '!'
             );
 
-            return $this->redirectToRoute('app_admin_buildings');
+            return $this->redirectToRoute('admin_buildings');
         }
 
         return $this->renderForm('admin/buildings/form.html.twig', [
