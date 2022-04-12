@@ -27,7 +27,7 @@ class SoftDeleteUserSubscriber implements EventSubscriberInterface
     public function postSoftDelete(LifecycleEventArgs $eventArgs): void
     {
         $user = $eventArgs->getObject();
-        if (!$user instanceof User || !in_array('ROLE_TRAINER', $user->getRoles())) {
+        if (!$user instanceof User || !in_array('ROLE_TRAINER', $user->getRoles(), true)) {
             return;
         }
 

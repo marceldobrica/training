@@ -87,7 +87,7 @@ class ProgrammeRepository extends ServiceEntityRepository
         return $query->getResult();
     }
 
-    public function setTrainerNull($id): void
+    public function removeTrainerWithIdFromProgrammes(int $id): void
     {
         $this->_em
             ->createQueryBuilder()
