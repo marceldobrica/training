@@ -1,0 +1,14 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block body %}
+    <div class="container">
+        <h1>Page not found!</h1>
+
+        <p>The requested page couldn't be located. Checkout for any URL misspelling or </p>
+
+        <p class="mt-5"><a class="btn-sm btn-info" href="{{ path('app_admin') }}">Return to admin homepage</a></p>
+
+        <p class="small text-info">The server returned an error: {{ status_code }}</p>
+        <p class="small text-info">Error message is {{ status_text }}</p>
+    </div>
+{% endblock %}
