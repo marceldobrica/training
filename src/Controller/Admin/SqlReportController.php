@@ -24,7 +24,7 @@ class SqlReportController extends AbstractController
     }
 
     /**
-     * @Route("/sql-report", name="admin_sql_report")
+     * @Route("/sql-report", name="admin_sql_report", methods={"GET"})
      */
     public function showReportAction(): Response
     {
