@@ -30,9 +30,8 @@ class SqlReportController extends AbstractController
     {
         $conn = $this->entityManager->getConnection();
         $sql = "SELECT programme.name AS name, DAY(start_date) AS day, HOUR(start_date) AS hour, " .
-            "COUNT(user.id) AS number FROM programme INNER JOIN programmes_customers " .
-            "ON programme.id = programmes_customers.programme_id INNER JOIN user " .
-            "ON programmes_customers.user_id = user.id GROUP BY programme.name, start_date " .
+            "COUNT(programmes_customers.user_id) AS number FROM programme INNER JOIN programmes_customers " .
+            "ON programme.id = programmes_customers.programme_id GROUP BY programme.name, start_date " .
             "ORDER BY number DESC LIMIT 0,5";
         $stmt = $conn->prepare($sql);
         $results = $stmt->executeQuery()->fetchAllAssociative();
