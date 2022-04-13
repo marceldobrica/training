@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\EventSubscriber;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpKernel\Event\RequestEvent;
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
 
 class ApiKeyVersionSubscriber implements EventSubscriberInterface
 {
@@ -19,12 +19,12 @@ class ApiKeyVersionSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            RequestEvent::class => ['addApiVersionKey', 257]
+            ResponseEvent::class => 'addApiVersionKey'
         ];
     }
 
-    public function addApiVersionKey(RequestEvent $event): void
+    public function addApiVersionKey(ResponseEvent $event): void
     {
-        $event->getRequest()->headers->set('X-API-VERSION', $this->apiVersionKey);
+        $event->getResponse()->headers->set('X-API-VERSION', $this->apiVersionKey);
     }
 }
