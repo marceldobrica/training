@@ -11,7 +11,8 @@ class ApiKeyVersionSubscriber implements EventSubscriberInterface
 {
     private string $apiVersionKey;
 
-    public function __construct(string $apiVersionKey) {
+    public function __construct(string $apiVersionKey)
+    {
         $this->apiVersionKey = $apiVersionKey;
     }
 
