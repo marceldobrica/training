@@ -25,6 +25,8 @@ class ApiKeyVersionSubscriber implements EventSubscriberInterface
 
     public function addApiVersionKey(ResponseEvent $event): void
     {
-        $event->getResponse()->headers->set('X-API-VERSION', $this->apiVersionKey);
+        if (\strpos($event->getResponse()->getContent(), '<!DOCTYPE html') === false) {
+            $event->getResponse()->headers->set('X-API-VERSION', $this->apiVersionKey);
+        }
     }
 }
