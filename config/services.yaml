@@ -17,6 +17,7 @@ services:
             $httpImportAddress: '%env(EVOZON_WAREHOUSE_BASE_URI)%'
             $defaultFilesDirectory: '%kernel.project_dir%/var/files'
             $passwordResetExpirationMinutes: '%env(PASSWORD_RESET_EXPIRATION_MINUTES)%'
+            $apiVersionKey: '%env(API_VERSION_KEY)%'
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
