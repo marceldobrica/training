@@ -3,7 +3,6 @@
 namespace App\Controller\Admin;
 
 use App\Repository\ProgrammeRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -15,12 +14,9 @@ class SqlReportController extends AbstractController
 {
     private ProgrammeRepository $programmeRepository;
 
-    private EntityManagerInterface $entityManager;
-
-    public function __construct(ProgrammeRepository $programmeRepository, EntityManagerInterface $entityManager)
+    public function __construct(ProgrammeRepository $programmeRepository)
     {
         $this->programmeRepository = $programmeRepository;
-        $this->entityManager = $entityManager;
     }
 
     /**
