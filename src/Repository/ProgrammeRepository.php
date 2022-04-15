@@ -82,7 +82,7 @@ class ProgrammeRepository extends ServiceEntityRepository
             ->from('App:Programme', 'p')
             ->getQuery();
 
-        return $query->setFirstResult($currentPosition) ->setMaxResults($articlesOnPage)->getResult();
+        return $query->setFirstResult($currentPosition)->setMaxResults($articlesOnPage)->getResult();
     }
 
     public function countProgrammes(): int
@@ -93,7 +93,7 @@ class ProgrammeRepository extends ServiceEntityRepository
             ->from('App:Programme', 'p')
             ->getQuery();
 
-        return (int) $query->getSingleScalarResult();
+        return (int)$query->getSingleScalarResult();
     }
 
     public function removeTrainerWithIdFromProgrammes(int $id): void
@@ -111,9 +111,27 @@ class ProgrammeRepository extends ServiceEntityRepository
     public function returnBusiestDate(): array
     {
         $conn = $this->_em->getConnection();
-        $sql = 'SELECT DATE(start_date) as day, HOUR(start_date) AS hour, COUNT(programmes_customers.user_id) AS number 
-                FROM programme INNER JOIN programmes_customers ON programme.id = programmes_customers.programme_id
-                GROUP BY hour, day ORDER BY number DESC LIMIT 0,5';
+        $sql = '
+                SELECT 
+                       src.day, 
+                       src.hour, 
+                       src.participants
+                FROM
+                    (SELECT 
+                        DATE(p.start_date) as day,
+                        HOUR(p.start_date) as hour,
+                        count(pc.user_id)  as participants,
+                        RANK() OVER (
+                            PARTITION BY DATE(p.start_date) ORDER BY COUNT(pc.user_id) DESC
+                            ) as position
+                    FROM programme p
+                        LEFT JOIN programmes_customers pc ON p.id = pc.programme_id
+                    GROUP BY day, hour) as src
+                WHERE src.position = 1
+                AND src.participants > 0
+                ORDER BY src.participants DESC
+                LIMIT 5
+                ';
         $stmt = $conn->prepare($sql);
         return $stmt->executeQuery()->fetchAllAssociative();
     }
