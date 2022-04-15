@@ -31,7 +31,6 @@ class SqlReportController extends AbstractController
         $results = $this->programmeRepository->returnBusiestDate();
 
         return $this->render('admin/sql_report/index.html.twig', [
-            'controller_name' => 'SqlReportController',
             'results' => $results
         ]);
     }
