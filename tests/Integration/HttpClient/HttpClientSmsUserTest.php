@@ -29,7 +29,7 @@ class HttpClientSmsUserTest extends KernelTestCase
     {
         $this->client->sendSms('1234567890', 'This is some content');
 
-        self::assertTrue(True);
+        self::assertTrue(true);
     }
 
     public function testWrongReceiver()
