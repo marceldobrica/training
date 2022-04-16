@@ -21,10 +21,7 @@ class HttpClientSmsUser
     }
 
     /**
-     * @throws TransportExceptionInterface
-     * @throws ServerExceptionInterface
-     * @throws RedirectionExceptionInterface
-     * @throws ClientExceptionInterface
+     * @throws ClientExceptionInterface|TransportExceptionInterface
      */
     public function sendSms(string $phone, string $message): void
     {
