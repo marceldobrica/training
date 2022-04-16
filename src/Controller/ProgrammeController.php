@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * @Route (path="/api/programme")
+ * @Route (path="/api")
  */
 class ProgrammeController
 {
@@ -35,9 +35,9 @@ class ProgrammeController
     }
 
     /**
-     * @Route(methods={"POST"})
+     * @Route(path="/trainer/programme", methods={"POST"})
      */
-    public function register(ProgrammeDto $programmeDto): Response
+    public function createProgrammeAction(ProgrammeDto $programmeDto): Response
     {
         $programme = Programme::createFromDto($programmeDto);
         $errors = $this->validator->validate($programme);
@@ -51,7 +51,7 @@ class ProgrammeController
     }
 
     /**
-     * @Route(methods={"GET"})
+     * @Route(path="/programme", methods={"GET"})
      */
     public function showAllPaginatedSortedFiltered(Request $request): array
     {

@@ -2,15 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Controller\ArgumentResolver;
+namespace App\Tests\Unit\Controller\ArgumentResolver;
 
 use App\Controller\ArgumentResolver\ProgrammeDtoArgumentValueResolver;
 use App\Controller\Dto\ProgrammeDto;
-use App\Entity\Room;
-use App\Entity\User;
-use Doctrine\Common\Collections\ArrayCollection;
-use PHPUnit\Framework\MockObject\MockClass;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\MockObject\MockClass;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;

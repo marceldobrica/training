@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Form\Type;
+namespace App\Tests\Unit\Form\Type;
 
 use App\Form\Type\ResetPasswordType;
+use App\Validator as MyAsserts;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
-use App\Validator as MyAsserts;
 
 class ResetPasswordTypeTest extends TestCase
 {

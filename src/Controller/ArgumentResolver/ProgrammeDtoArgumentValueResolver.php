@@ -35,6 +35,8 @@ class ProgrammeDtoArgumentValueResolver implements ArgumentValueResolverInterfac
         $programeeDto->isOnline = $decodedData['isOnline'];
         $programeeDto->customers = new ArrayCollection();
         $programeeDto->maxParticipants = $decodedData['maxParticipants'];
+        $programeeDto->trainer = null;
+
 //        if (isset($decodedData['trainer_id'])) {
 //            $programeeDto->trainer = $this->saveProgramme->resolveTrainer($decodedData['trainer_id']);
 //        } else {

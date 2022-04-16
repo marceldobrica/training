@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Validator;
+namespace App\Tests\Unit\Validator;
 
 use App\Validator\Cnp;
 use App\Validator\CnpValidator;
