@@ -34,7 +34,7 @@ security:
                 realm: Secured Area
         admin:
             pattern: ^/admin
-            provider: all_users
+            provider: email_identified_users
             form_login:
                 login_path: admin_login
                 check_path: admin_login
