@@ -44,7 +44,7 @@ class Programme
      * @ORM\Column(type="datetime")
      * @Assert\Type("\DateTimeInterface")
      * @Groups ("api:programme:all")
-     * @MyAssert\ProgrammeDateTimeNotInPast()
+     * @MyAssert\DateTimeInFuture()
      */
     private \DateTime $startDate;
 
@@ -52,7 +52,7 @@ class Programme
      * @ORM\Column(type="datetime")
      * @Assert\Type("\DateTimeInterface")
      * @Groups ("api:programme:all")
-     * @MyAssert\ProgrammeDateTimeNotInPast()
+     * @MyAssert\DateTimeInFuture()
      */
     private \DateTime $endDate;
 

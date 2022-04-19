@@ -30,15 +30,14 @@ class ProgrammeDateTimeDifferenceValidator extends ConstraintValidator
         if (!$constraint instanceof ProgrammeDateTimeDifference) {
             throw new UnexpectedTypeException($constraint, ProgrammeDateTimeDifference::class);
         }
+
         $interval = $value->getStartDate()->diff($value->getEndDate(), false);
+        $minutes = $interval->days * 24 * 60 + $interval->h * 60 + $interval->i;
 
         if (
             $value->getEndDate() > $value->getStartDate() &&
-            $interval->y === 0 &&
-            $interval->m === 0 &&
-            $interval->d === 0 &&
-            $interval->h * 60 + $interval->i >= $this->programmeMinTimeInMinutes &&
-            $interval->h * 60 + $interval->i <= $this->programmeMaxTimeInMinutes
+            $minutes >= $this->programmeMinTimeInMinutes &&
+            $minutes <= $this->programmeMaxTimeInMinutes
         ) {
             return;
         }

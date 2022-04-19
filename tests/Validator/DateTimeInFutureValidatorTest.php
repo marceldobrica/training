@@ -4,17 +4,16 @@ declare(strict_types=1);
 
 namespace App\Tests\Validator;
 
-use App\Entity\Programme;
-use App\Validator\ProgrammeDateTimeNotInPast;
-use App\Validator\ProgrammeDateTimeNotInPastValidator;
+use App\Validator\DateTimeInFuture;
+use App\Validator\DateTimeInFutureValidator;
 use Symfony\Component\Validator\ConstraintValidatorInterface;
 use Symfony\Component\Validator\Test\ConstraintValidatorTestCase;
 
-class ProgrammeDateTimeNotInPastValidatorTest extends ConstraintValidatorTestCase
+class DateTimeInFutureValidatorTest extends ConstraintValidatorTestCase
 {
     protected function createValidator(): ConstraintValidatorInterface
     {
-        return new ProgrammeDateTimeNotInPastValidator();
+        return new DateTimeInFutureValidator();
     }
 
     public function provideDateTime(): array
@@ -31,12 +30,12 @@ class ProgrammeDateTimeNotInPastValidatorTest extends ConstraintValidatorTestCas
      */
     public function testDatesNotInPast(\DateTime $dateTime, bool $expectedValid): void
     {
-        $this->validator->validate($dateTime, new ProgrammeDateTimeNotInPast());
+        $this->validator->validate($dateTime, new DateTimeInFuture());
         if ($expectedValid) {
             $this->assertNoViolation();
         } else {
-            $this->buildViolation('Programmes start and end dates should be greater than current moment! 
-                    You are not allowed to modify past programmes.')->assertRaised();
+            $this->buildViolation('Programmes start and end dates should be greater than current moment! ' .
+                'You are not allowed to modify past programmes.')->assertRaised();
         }
     }
 }

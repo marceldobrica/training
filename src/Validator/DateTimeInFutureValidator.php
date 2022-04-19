@@ -9,12 +9,16 @@ use Symfony\Component\HttpFoundation\File\Exception\UnexpectedTypeException;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
-class ProgrammeDateTimeNotInPastValidator extends ConstraintValidator
+class DateTimeInFutureValidator extends ConstraintValidator
 {
     public function validate($value, Constraint $constraint)
     {
-        if (!$constraint instanceof ProgrammeDateTimeNotInPast) {
-            throw new UnexpectedTypeException($constraint, ProgrammeDateTimeNotInPast::class);
+        if (!$value instanceof \DateTime) {
+            throw new UnexpectedTypeException($value, \DateTime::class);
+        }
+
+        if (!$constraint instanceof DateTimeInFuture) {
+            throw new UnexpectedTypeException($constraint, DateTimeInFuture::class);
         }
 
         if (
