@@ -10,14 +10,8 @@ class BuildingDto
 {
     public int $id;
 
-    /**
-     * @Assert\Type("\DateTimeInterface")
-     */
     public \DateTime $startTime;
 
-    /**
-     * @Assert\Type("\DateTimeInterface")
-     */
     public \DateTime $endTime;
 
     public static function createFromBuilding(Building $building): self
