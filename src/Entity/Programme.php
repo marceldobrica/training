@@ -137,7 +137,7 @@ class Programme
 
     public function setRoom(?Room $room): self
     {
-        $this->room = $room; //TODO set nextAvailableRoom when $room is null!
+        $this->room = $room;
 
         return $this;
     }
