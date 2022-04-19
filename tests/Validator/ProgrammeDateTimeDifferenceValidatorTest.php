@@ -48,7 +48,11 @@ class ProgrammeDateTimeDifferenceValidatorTest extends ConstraintValidatorTestCa
             $this->assertNoViolation();
         } else {
             $this->buildViolation('Difference between programmes end date and start date should be greater or equal 
-                                with 15 minutes and lesser or equal with 6 hours')->assertRaised();
+                                with {{ minTimeMin }} minutes and lesser or equal with {{ maxTimeMin }} minutes')
+                ->setParameters([
+                '{{ minTimeMin }}' => '15',
+                '{{ maxTimeMin }}' => '360'
+            ])->assertRaised();
         }
     }
 }

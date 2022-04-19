@@ -42,7 +42,9 @@ class ProgrammeDateTimeDifferenceValidator extends ConstraintValidator
         ) {
             return;
         }
-
-        $this->context->buildViolation($constraint->message)->addViolation();
+        $this->context->buildViolation($constraint->message)->setParameters([
+            '{{ minTimeMin }}' => $this->programmeMinTimeInMinutes,
+            '{{ maxTimeMin }}' => $this->programmeMaxTimeInMinutes
+        ])->addViolation();
     }
 }
