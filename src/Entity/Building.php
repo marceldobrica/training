@@ -32,7 +32,7 @@ class Building
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Assert\Regex("/^[\p{Lu}].+/")
+     * @Assert\Regex("/^[\p{Lu}].+/", message="The value should start with an uppercase letter.")
      */
     public string $address = 'Online';
 

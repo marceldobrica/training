@@ -25,7 +25,7 @@ class Programme
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank
-     * @Assert\Regex("/^[\p{Lu}].+/")
+     * @Assert\Regex("/^[\p{Lu}].+/", message="The value should start with an uppercase letter.")
      * @Groups ("api:programme:all")
      */
     public string $name = '';
@@ -136,7 +136,7 @@ class Programme
 
     public function setRoom(?Room $room): self
     {
-        $this->room = $room; //TODO set nextAvailableRoom when $room is null!
+        $this->room = $room;
 
         return $this;
     }
@@ -186,7 +186,6 @@ class Programme
         $programme->setEndDate($programmeDto->endDate);
         $programme->setTrainer($programmeDto->trainer);
         $programme->setRoom($programmeDto->room);
-        $programme->setCustomers($programmeDto->customers);
         $programme->isOnline = $programmeDto->isOnline;
         $programme->maxParticipants = $programmeDto->maxParticipants;
 
