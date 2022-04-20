@@ -2,15 +2,19 @@
 
 namespace App\Entity;
 
+use App\Repository\ProgrammeRepository;
 use App\Controller\Dto\ProgrammeDto;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
+use App\Validator as MyAssert;
 
 /**
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass=ProgrammeRepository::class)
+ * @ORM\Table (name="programme")
+ * @MyAssert\ProgrammeDateTimeDifference()
  */
 class Programme
 {
@@ -40,6 +44,7 @@ class Programme
      * @ORM\Column(type="datetime")
      * @Assert\Type("\DateTimeInterface")
      * @Groups ("api:programme:all")
+     * @MyAssert\DateTimeInFuture()
      */
     private \DateTime $startDate;
 
@@ -47,6 +52,7 @@ class Programme
      * @ORM\Column(type="datetime")
      * @Assert\Type("\DateTimeInterface")
      * @Groups ("api:programme:all")
+     * @MyAssert\DateTimeInFuture()
      */
     private \DateTime $endDate;
 
