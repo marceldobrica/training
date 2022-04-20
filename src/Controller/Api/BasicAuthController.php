@@ -6,15 +6,15 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class ApiTrainerController
+class BasicAuthController
 {
     /**
-     * @Route("/api/trainer", methods={"GET"})
+     * @Route("/api/basic", methods={"GET"})
      */
-    public function verifyTrainerAccessAction(): Response
+    public function verifyBasicAuthAccessAction(): Response
     {
         return new JsonResponse([
-            'message' => 'Welcome to your new controller available only for users with ROLE_TRAINER!'
+            'message' => 'Welcome to your new controller visible if you are authentificated with Basic Auth!'
         ]);
     }
 }

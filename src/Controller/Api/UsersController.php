@@ -20,7 +20,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 /**
  * @Route (path="/api/users")
  */
-class ApiUsersController implements LoggerAwareInterface
+class UsersController implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
 

@@ -15,7 +15,7 @@ use Symfony\Component\Uid\Uuid;
 /**
  * @Route ("/api")
  */
-class ApiLoginController extends AbstractController
+class LoginController extends AbstractController
 {
     private Security $security;
 

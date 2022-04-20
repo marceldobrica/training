@@ -13,12 +13,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-use function App\Controller\count;
-
 /**
  * @Route (path="/api/rooms")
  */
-class ApiRoomsController implements LoggerAwareInterface
+class RoomsController implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
