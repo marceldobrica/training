@@ -30,7 +30,7 @@ class RoomDtoArgumentValueResolver implements ArgumentValueResolverInterface
     public function resolve(Request $request, ArgumentMetadata $argument): \Generator
     {
         $data = $request->getContent();
-        $decodedData = json_decode($data, true);
+        $decodedData = \json_decode($data, true);
 
         $dto = new RoomDto();
         $dto->name = $decodedData['name'];

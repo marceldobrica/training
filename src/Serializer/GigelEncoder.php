@@ -17,7 +17,7 @@ class GigelEncoder implements EncoderInterface, DecoderInterface
             },
             $data
         );
-        return json_encode($transformed);
+        return \json_encode($transformed);
     }
 
     public function supportsEncoding(string $format): bool

@@ -6,6 +6,7 @@ use App\Entity\Programme;
 use App\Form\Type\DeleteCancelType;
 use App\Form\Type\ProgrammeType;
 use App\Repository\ProgrammeRepository;
+use App\Repository\RoomRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,16 +20,20 @@ class ProgrammeController extends AbstractController
 {
     private ProgrammeRepository $programmeRepository;
 
+    private RoomRepository $roomRepository;
+
     private EntityManagerInterface $entityManager;
 
     private int $articlesOnPage;
 
     public function __construct(
         ProgrammeRepository $programmeRepository,
+        RoomRepository $roomRepository,
         EntityManagerInterface $entityManager,
         string $articlesOnPage
     ) {
         $this->programmeRepository = $programmeRepository;
+        $this->roomRepository = $roomRepository;
         $this->entityManager = $entityManager;
         $this->articlesOnPage = intval($articlesOnPage);
     }
@@ -43,7 +48,7 @@ class ProgrammeController extends AbstractController
         $nrProgrammes = $this->programmeRepository->countProgrammes();
         $currentPosition = ($currentPage - 1) * $pageSize;
         $nextPage = ($currentPosition + $pageSize < $nrProgrammes) ? $currentPage + 1 : $currentPage;
-        $previousPage = ($currentPosition >= $pageSize) ?   $currentPage - 1 : $currentPage;
+        $previousPage = ($currentPosition >= $pageSize) ? $currentPage - 1 : $currentPage;
         $programmes = $this->programmeRepository->findAllPaginated($currentPage, $pageSize);
 
         return $this->render('admin/programme/index.html.twig', [
@@ -65,6 +70,8 @@ class ProgrammeController extends AbstractController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $programme = $form->getData();
+            $programme = $this->resolveProgramme($programme);
+
             $this->entityManager->persist($programme);
             $this->entityManager->flush();
             $this->addFlash(
@@ -86,6 +93,10 @@ class ProgrammeController extends AbstractController
     public function deleteProgrammeAction(Request $request, $id): Response
     {
         $programme = $this->programmeRepository->findOneBy(['id' => $id]);
+        if (null === $programme) {
+            return new Response('Programme not found!', Response::HTTP_NOT_FOUND);
+        }
+
         $form = $this->createForm(DeleteCancelType::class);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -113,10 +124,17 @@ class ProgrammeController extends AbstractController
     public function updateProgrammeAction(Request $request, $id): Response
     {
         $programme = $this->programmeRepository->findOneBy(['id' => $id]);
+        if (null === $programme) {
+            return new Response('Programme not found!', Response::HTTP_NOT_FOUND);
+        }
+
         $form = $this->createForm(ProgrammeType::class, $programme);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            /** @var Programme */
             $programme = $form->getData();
+            $programme = $this->resolveProgramme($programme);
+
             $this->entityManager->persist($programme);
             $this->entityManager->flush();
             $this->addFlash(
@@ -130,5 +148,45 @@ class ProgrammeController extends AbstractController
         return $this->renderForm('admin/programme/form.html.twig', [
             'form' => $form,
         ]);
+    }
+
+    private function resolveProgramme(Programme $programme): Programme
+    {
+        if (!is_null($programme->getTrainer())) {
+            if (
+                !empty(
+                    $this->programmeRepository->isUserOcupiedAsTrainer(
+                        $programme->getStartDate(),
+                        $programme->getEndDate(),
+                        $programme->getTrainer()->getId()
+                    )
+                ) ||
+                !empty(
+                    $this->programmeRepository->isUserOcupiedAsCustomer(
+                        $programme->getStartDate(),
+                        $programme->getStartDate(),
+                        $programme->getTrainer()->getId()
+                    )
+                )
+            ) {
+                $programme->setTrainer(null);
+                $this->addFlash(
+                    'warning',
+                    'The choosed trainer is already busy! We have set trainer to null!'
+                );
+            }
+        }
+        if (is_null($programme->getRoom())) {
+            $programme->setRoom(
+                $this->roomRepository->getRoomForProgramme(
+                    $programme->getStartDate(),
+                    $programme->getEndDate(),
+                    $programme->isOnline,
+                    $programme->maxParticipants
+                )
+            );
+        }
+
+        return $programme;
     }
 }

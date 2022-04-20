@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Api;
 
 use App\Controller\Dto\UserDto;
+use App\Controller\ReturnValidationErrorsTrait;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -13,12 +14,13 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
- * @Route (path="/api/user")
+ * @Route (path="/api/users")
  */
-class UserController implements LoggerAwareInterface
+class ApiUsersController implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
@@ -32,36 +34,35 @@ class UserController implements LoggerAwareInterface
 
     private UserPasswordHasherInterface $passwordHasher;
 
+    private Security $security;
+
     public function __construct(
         EntityManagerInterface $entityManager,
         ValidatorInterface $validator,
         UserRepository $userRepository,
-        UserPasswordHasherInterface $passwordHasher
+        UserPasswordHasherInterface $passwordHasher,
+        Security $security
     ) {
         $this->entityManager = $entityManager;
         $this->validator = $validator;
         $this->userRepository = $userRepository;
         $this->passwordHasher = $passwordHasher;
+        $this->security = $security;
     }
 
     /**
      * @Route(methods={"POST"})
      */
-    public function register(UserDto $userDto): Response
+    public function registerUserAction(UserDto $userDto): Response
     {
-        $errorsDto = $this->validator->validate($userDto);
-        if (count($errorsDto) > 0) {
-            return $this->returnValidationErrors($errorsDto);
-        }
-        $this->logger->info('An userDto was validated');
-
         $user = User::createFromDto($userDto);
-        $user->setPassword($this->passwordHasher->hashPassword($user, $user->getPassword()));
         $errorsUser = $this->validator->validate($user);
 
         if (count($errorsUser) > 0) {
             return $this->returnValidationErrors($errorsUser);
         }
+
+        $user->setPassword($this->passwordHasher->hashPassword($user, $user->getPassword()));
 
         $this->entityManager->persist($user);
         $this->entityManager->flush();
@@ -83,6 +84,13 @@ class UserController implements LoggerAwareInterface
         if (null === $user) {
             return new JsonResponse('No user found', Response::HTTP_BAD_REQUEST);
         }
+
+        $currentUser = $this->security->getUser();
+
+        if ($currentUser !== $user) {
+            return new JsonResponse('Only logged in user may delete him(her)self.', Response::HTTP_FORBIDDEN);
+        }
+
         $this->entityManager->remove($user);
         $this->entityManager->flush();
         $this->logger->info('An user was soft-deleted');
@@ -96,7 +104,7 @@ class UserController implements LoggerAwareInterface
     public function recoverUserAction(Request $request): Response
     {
         $data = $request->getContent();
-        $decodedData = json_decode($data, true);
+        $decodedData = \json_decode($data, true);
         if (!isset($decodedData['email'])) {
             $this->logger->warning('An atempt to post on recover without email');
 
@@ -115,6 +123,7 @@ class UserController implements LoggerAwareInterface
                 Response::HTTP_BAD_REQUEST
             );
         }
+
         $user->setDeletedAt(null);
         $this->entityManager->persist($user);
         $this->entityManager->flush();

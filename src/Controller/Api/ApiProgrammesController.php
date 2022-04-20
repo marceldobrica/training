@@ -1,20 +1,23 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Api;
 
 use App\Controller\Dto\ProgrammeDto;
+use App\Controller\ReturnValidationErrorsTrait;
 use App\Entity\Programme;
 use App\Repository\ProgrammeRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Symfony\Component\HttpFoundation\Request;
+
+use function App\Controller\count;
 
 /**
- * @Route (path="/api/programme")
+ * @Route (path="/api/programmes")
  */
-class ProgrammeController
+class ApiProgrammesController
 {
     use ReturnValidationErrorsTrait;
 
@@ -37,13 +40,14 @@ class ProgrammeController
     /**
      * @Route(methods={"POST"})
      */
-    public function register(ProgrammeDto $programmeDto): Response
+    public function createProgrammeAction(ProgrammeDto $programmeDto): Response
     {
         $programme = Programme::createFromDto($programmeDto);
         $errors = $this->validator->validate($programme);
         if (count($errors) > 0) {
             return $this->returnValidationErrors($errors);
         }
+
         $this->programmeRepository->add($programme);
         $savedProgrammeDto = ProgrammeDto::createFromProgramme($programme);
 

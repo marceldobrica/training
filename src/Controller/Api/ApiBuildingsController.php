@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Api;
 
-use App\Controller\Dto\RoomDto;
-use App\Entity\Room;
+use App\Controller\Dto\BuildingDto;
+use App\Controller\ReturnValidationErrorsTrait;
+use App\Entity\Building;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
@@ -12,10 +13,12 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
+use function App\Controller\count;
+
 /**
- * @Route (path="/api/room")
+ * @Route (path="/api/buildings")
  */
-class RoomController implements LoggerAwareInterface
+class ApiBuildingsController implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
@@ -34,30 +37,23 @@ class RoomController implements LoggerAwareInterface
     /**
      * @Route(methods={"POST"})
      */
-    public function register(RoomDto $roomDto): Response
+    public function createBuildingAction(BuildingDto $buildingDto): Response
     {
-        $errors = $this->validator->validate($roomDto);
+        $building = Building::createFromDto($buildingDto);
+
+        $errors = $this->validator->validate($building);
         if (count($errors) > 0) {
             return $this->returnValidationErrors($errors);
         }
 
-        $this->logger->info('A roomDto was validated');
-
-        $room = Room::createFromDto($roomDto);
-        $errors = $this->validator->validate($room);
-
-        if (count($errors) > 0) {
-            return $this->returnValidationErrors($errors);
-        }
-
-        $this->entityManager->persist($room);
+        $this->entityManager->persist($building);
         $this->entityManager->flush();
-        $this->entityManager->refresh($room);
+        $this->entityManager->refresh($building);
 
-        $this->logger->info('A room was registered and saved in DB');
+        $newBuildingDto = BuildingDto::createFromBuilding($building);
 
-        $savedRoomDto = RoomDto::createFromRoom($room);
+        $this->logger->info('A Building was registered and saved in DB');
 
-        return new JsonResponse($savedRoomDto, Response::HTTP_CREATED);
+        return new JsonResponse($newBuildingDto, Response::HTTP_CREATED);
     }
 }

@@ -15,6 +15,10 @@ use App\Validator as MyAssert;
  * @ORM\Entity(repositoryClass=ProgrammeRepository::class)
  * @ORM\Table (name="programme")
  * @MyAssert\ProgrammeDateTimeDifference()
+ * @MyAssert\ProgrammeRoomOccupied()
+ * @MyAssert\ProgrammeRoomOnline()
+ * @MyAssert\ProgrammeRoomCapacities()
+ * @MyAssert\ProgrammeBuildingTime()
  */
 class Programme
 {

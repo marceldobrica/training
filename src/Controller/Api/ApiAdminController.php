@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Api;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,7 +13,6 @@ class ApiAdminController
      */
     public function verifyAdminAccessAction(): Response
     {
-
         return new JsonResponse([
             'message' => 'Welcome to your new controller - available only for ROLE_ADMIN!'
         ]);

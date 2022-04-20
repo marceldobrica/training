@@ -72,6 +72,10 @@ class RoomsController extends AbstractController
     public function deleteRoomAction(Request $request, $id): Response
     {
         $room = $this->roomRepository->findOneBy(['id' => $id]);
+        if (null === $room) {
+            return new Response('Room not found!', Response::HTTP_NOT_FOUND);
+        }
+
         $form = $this->createForm(DeleteCancelType::class);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -99,6 +103,10 @@ class RoomsController extends AbstractController
     public function updateRoomAction(Request $request, $id): Response
     {
         $room = $this->roomRepository->findOneBy(['id' => $id]);
+        if (null === $room) {
+            return new Response('Room not found!', Response::HTTP_NOT_FOUND);
+        }
+
         $form = $this->createForm(RoomType::class, $room);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
