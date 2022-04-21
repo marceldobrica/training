@@ -2,15 +2,25 @@
 
 namespace App\Entity;
 
+use App\Repository\ProgrammeRepository;
 use App\Controller\Dto\ProgrammeDto;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
+use App\Validator as MyAssert;
 
 /**
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass=ProgrammeRepository::class)
+ * @ORM\Table (name="programme")
+ * @MyAssert\ProgrammeDateTimeDifference()
+ * @MyAssert\ProgrammeRoomOccupied()
+ * @MyAssert\ProgrammeRoomOnline()
+ * @MyAssert\ProgrammeRoomCapacities()
+ * @MyAssert\ProgrammeBuildingTime()
+ * @MyAssert\ProgrammeTrainerAvailable()
+ * @MyAssert\ProgrammeCustomerAvailable()
  */
 class Programme
 {
@@ -25,7 +35,7 @@ class Programme
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank
-     * @Assert\Regex("/^[\p{Lu}].+/")
+     * @Assert\Regex("/^[\p{Lu}].+/", message="The value should start with an uppercase letter.")
      * @Groups ("api:programme:all")
      */
     public string $name = '';
@@ -40,6 +50,7 @@ class Programme
      * @ORM\Column(type="datetime")
      * @Assert\Type("\DateTimeInterface")
      * @Groups ("api:programme:all")
+     * @MyAssert\DateTimeInFuture()
      */
     private \DateTime $startDate;
 
@@ -47,12 +58,14 @@ class Programme
      * @ORM\Column(type="datetime")
      * @Assert\Type("\DateTimeInterface")
      * @Groups ("api:programme:all")
+     * @MyAssert\DateTimeInFuture()
      */
     private \DateTime $endDate;
 
     /**
      * @ORM\ManyToOne(targetEntity="User")
      * @ORM\JoinColumn(name="trainer_id", referencedColumnName="id", nullable=true)
+     * @MyAssert\IsTrainer()
      * @Groups ("api:programme:all")
      */
     private ?User $trainer;
@@ -68,7 +81,6 @@ class Programme
     /**
      * @ORM\ManyToMany(targetEntity="User", inversedBy="programmes")
      * @ORM\JoinTable(name="programmes_customers")
-     * @Assert\Collection
      */
     private Collection $customers;
 
@@ -137,7 +149,7 @@ class Programme
 
     public function setRoom(?Room $room): self
     {
-        $this->room = $room; //TODO set nextAvailableRoom when $room is null!
+        $this->room = $room;
 
         return $this;
     }
@@ -187,7 +199,6 @@ class Programme
         $programme->setEndDate($programmeDto->endDate);
         $programme->setTrainer($programmeDto->trainer);
         $programme->setRoom($programmeDto->room);
-        $programme->setCustomers($programmeDto->customers);
         $programme->isOnline = $programmeDto->isOnline;
         $programme->maxParticipants = $programmeDto->maxParticipants;
 

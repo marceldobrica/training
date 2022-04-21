@@ -27,7 +27,7 @@ class HttpClientSmsUser
             'receiver' => $phone,
             'body' => $message
         ];
-        $postJson = json_encode($postData);
+        $postJson = \json_encode($postData);
 
         $this->client->request(
             Request::METHOD_POST,

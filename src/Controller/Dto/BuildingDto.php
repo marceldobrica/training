@@ -5,20 +5,20 @@ declare(strict_types=1);
 namespace App\Controller\Dto;
 
 use App\Entity\Building;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class BuildingDto
 {
     public int $id;
 
-    /**
-     * @Assert\Type("\DateTimeInterface")
-     */
     public \DateTime $startTime;
 
-    /**
-     * @Assert\Type("\DateTimeInterface")
-     */
     public \DateTime $endTime;
+
+    /**
+     * @Assert\Regex("/^[\p{Lu}].+/", message="The value should start with an uppercase letter.")
+     */
+    public string $address = '';
 
     public static function createFromBuilding(Building $building): self
     {
@@ -26,6 +26,7 @@ class BuildingDto
         $dto->id = $building->getId();
         $dto->startTime = $building->getStartTime();
         $dto->endTime = $building->getEndTime();
+        $dto->address = $building->address;
 
         return $dto;
     }

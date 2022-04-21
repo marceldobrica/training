@@ -1,20 +1,21 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Api;
 
 use App\Controller\Dto\ProgrammeDto;
+use App\Controller\ReturnValidationErrorsTrait;
 use App\Entity\Programme;
 use App\Repository\ProgrammeRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Symfony\Component\HttpFoundation\Request;
 
 /**
- * @Route (path="/api")
+ * @Route (path="/api/programmes")
  */
-class ProgrammeController
+class ProgrammesController
 {
     use ReturnValidationErrorsTrait;
 
@@ -35,7 +36,7 @@ class ProgrammeController
     }
 
     /**
-     * @Route(path="/trainer/programme", methods={"POST"})
+     * @Route(methods={"POST"})
      */
     public function createProgrammeAction(ProgrammeDto $programmeDto): Response
     {
@@ -44,6 +45,7 @@ class ProgrammeController
         if (count($errors) > 0) {
             return $this->returnValidationErrors($errors);
         }
+
         $this->programmeRepository->add($programme);
         $savedProgrammeDto = ProgrammeDto::createFromProgramme($programme);
 
@@ -51,7 +53,7 @@ class ProgrammeController
     }
 
     /**
-     * @Route(path="/programme", methods={"GET"})
+     * @Route(methods={"GET"})
      */
     public function showAllPaginatedSortedFiltered(Request $request): array
     {

@@ -62,4 +62,18 @@ class UserRepository extends ServiceEntityRepository
 
         return (int) $query->getSingleScalarResult();
     }
+
+    public function isTrainer($userid): int
+    {
+        $query = $this->_em
+            ->createQueryBuilder()
+            ->select('u.id')
+            ->from('App:User', 'u')
+            ->andWhere('u.roles LIKE \'%ROLE_ADMIN%\' OR u.roles LIKE \'%ROLE_TRAINER%\'')
+            ->andWhere('u.id = :userid')
+            ->setParameter(':userid', $userid)
+            ->getQuery();
+
+        return (int) $query->getSingleScalarResult();
+    }
 }
