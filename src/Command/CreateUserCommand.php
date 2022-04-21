@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Command;
 
+use App\Event\UserCreatedEvent;
 use App\Repository\UserRepository;
 use Symfony\Component\Console\Question\Question;
 use App\Entity\User;
@@ -13,6 +14,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -30,14 +32,18 @@ class CreateUserCommand extends Command
 
     private UserPasswordHasherInterface $passwordHasher;
 
+    private EventDispatcherInterface $dispatcher;
+
     public function __construct(
         UserRepository $userRepository,
         ValidatorInterface $validator,
-        UserPasswordHasherInterface $passwordHasher
+        UserPasswordHasherInterface $passwordHasher,
+        EventDispatcherInterface $dispatcher
     ) {
         $this->userRepository = $userRepository;
         $this->validator = $validator;
         $this->passwordHasher = $passwordHasher;
+        $this->dispatcher = $dispatcher;
 
         parent::__construct();
     }
@@ -86,6 +92,8 @@ class CreateUserCommand extends Command
         }
 
         $this->userRepository->add($user);
+
+        $this->dispatcher->dispatch(new UserCreatedEvent($user), UserCreatedEvent::NAME);
 
         $io->success('You have created an user');
 

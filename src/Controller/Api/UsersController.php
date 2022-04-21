@@ -5,10 +5,12 @@ namespace App\Controller\Api;
 use App\Controller\Dto\UserDto;
 use App\Controller\ReturnValidationErrorsTrait;
 use App\Entity\User;
+use App\Event\UserCreatedEvent;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -36,18 +38,22 @@ class UsersController implements LoggerAwareInterface
 
     private Security $security;
 
+    private EventDispatcherInterface $dispatcher;
+
     public function __construct(
         EntityManagerInterface $entityManager,
         ValidatorInterface $validator,
         UserRepository $userRepository,
         UserPasswordHasherInterface $passwordHasher,
-        Security $security
+        Security $security,
+        EventDispatcherInterface $dispatcher
     ) {
         $this->entityManager = $entityManager;
         $this->validator = $validator;
         $this->userRepository = $userRepository;
         $this->passwordHasher = $passwordHasher;
         $this->security = $security;
+        $this->dispatcher = $dispatcher;
     }
 
     /**
@@ -67,6 +73,7 @@ class UsersController implements LoggerAwareInterface
         $this->entityManager->persist($user);
         $this->entityManager->flush();
         $this->entityManager->refresh($user);
+        $this->dispatcher->dispatch(new UserCreatedEvent($user), UserCreatedEvent::NAME);
 
         $this->logger->info('An user was registered and saved in DB');
         $savedUserDto = UserDto::createFromUser($user);
