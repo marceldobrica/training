@@ -4,7 +4,7 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
-
+    app.analytics_log_file: 'analytics.log'
 services:
     # default configuration for services in *this* file
     _defaults:
@@ -18,6 +18,7 @@ services:
             $defaultFilesDirectory: '%kernel.project_dir%/var/files'
             $passwordResetExpirationMinutes: '%env(PASSWORD_RESET_EXPIRATION_MINUTES)%'
             $apiVersionKey: '%env(API_VERSION_KEY)%'
+            $appAnalyticsLogFile: '%kernel.logs_dir%/%app.analytics_log_file%'
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
