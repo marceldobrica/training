@@ -2,6 +2,7 @@
 
 namespace App\Controller\Admin;
 
+use App\Controller\ReturnValidationErrorsTrait;
 use App\Entity\Programme;
 use App\Form\Type\DeleteCancelType;
 use App\Form\Type\ProgrammeType;
@@ -12,17 +13,22 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * @Route("/admin/programmes")
  */
 class ProgrammeController extends AbstractController
 {
+    use ReturnValidationErrorsTrait;
+
     private ProgrammeRepository $programmeRepository;
 
     private RoomRepository $roomRepository;
 
     private EntityManagerInterface $entityManager;
+
+    private ValidatorInterface $validator;
 
     private int $articlesOnPage;
 
@@ -30,11 +36,13 @@ class ProgrammeController extends AbstractController
         ProgrammeRepository $programmeRepository,
         RoomRepository $roomRepository,
         EntityManagerInterface $entityManager,
+        ValidatorInterface $validator,
         string $articlesOnPage
     ) {
         $this->programmeRepository = $programmeRepository;
         $this->roomRepository = $roomRepository;
         $this->entityManager = $entityManager;
+        $this->validator = $validator;
         $this->articlesOnPage = intval($articlesOnPage);
     }
 
@@ -105,6 +113,10 @@ class ProgrammeController extends AbstractController
                     )
                 );
             }
+            $errors = $this->validator->validate($programme);
+            if (count($errors) > 0) {
+                return $this->returnValidationErrors($errors);
+            }
 
             $this->entityManager->persist($programme);
             $this->entityManager->flush();
@@ -167,7 +179,10 @@ class ProgrammeController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var Programme */
             $programme = $form->getData();
-
+            $errors = $this->validator->validate($programme);
+            if (count($errors) > 0) {
+                return $this->returnValidationErrors($errors);
+            }
             $this->entityManager->persist($programme);
             $this->entityManager->flush();
             $this->addFlash(
