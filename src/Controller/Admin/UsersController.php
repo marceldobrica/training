@@ -95,6 +95,10 @@ class UsersController extends AbstractController
     public function deleteUserAction(Request $request, $id): Response
     {
         $user = $this->userRepository->findOneBy(['id' => $id]);
+        if (null === $user) {
+            return new Response('User not found!', Response::HTTP_NOT_FOUND);
+        }
+
         $form = $this->createForm(DeleteCancelType::class);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -122,6 +126,10 @@ class UsersController extends AbstractController
     public function updateUserAction(Request $request, $id): Response
     {
         $user = $this->userRepository->findOneBy(['id' => $id]);
+        if (null === $user) {
+            return new Response('User not found!', Response::HTTP_NOT_FOUND);
+        }
+
         $form = $this->createForm(UserModifyType::class, $user);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {

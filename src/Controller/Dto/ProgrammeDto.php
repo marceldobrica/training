@@ -14,20 +14,14 @@ class ProgrammeDto
 
     /**
      * @Assert\NotBlank
-     * @Assert\Regex("/^[\p{Lu}].+/")
+     * @Assert\Regex("/^[\p{Lu}].+/", message="The value should start with an uppercase letter.")
      */
     public string $name;
 
     public string $description = '';
 
-    /**
-     * @Assert\Type("\DateTimeInterface")
-     */
     public \DateTime $startDate;
 
-    /**
-     * @Assert\Type("\DateTimeInterface")
-     */
     public \DateTime $endDate;
 
     public ?User $trainer;

@@ -6,14 +6,14 @@ namespace App\Tests\Controller\ArgumentResolver;
 
 use App\Controller\ArgumentResolver\ProgrammeDtoArgumentValueResolver;
 use App\Controller\Dto\ProgrammeDto;
-use App\Entity\Room;
-use App\Entity\User;
-use Doctrine\Common\Collections\ArrayCollection;
+use App\Repository\ProgrammeRepository;
+use App\Repository\RoomRepository;
 use PHPUnit\Framework\MockObject\MockClass;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
+use Symfony\Component\Security\Core\Security;
 
 class ProgrammeDtoArgumentValueResolverTest extends TestCase
 {
@@ -22,12 +22,28 @@ class ProgrammeDtoArgumentValueResolverTest extends TestCase
     /**
      * @var EntityManagerInterface|MockClass
      */
-    private $entityManager;
+    private $security;
+
+    /**
+     * @var EntityManagerInterface|MockClass
+     */
+    private $roomRepository;
+
+    /**
+     * @var EntityManagerInterface|MockClass
+     */
+    private $programmeRepository;
 
     public function setUp(): void
     {
-        $this->entityManager = $this->createMock(EntityManagerInterface::class);
-        $this->programmeDtoArgumentValueResolver = new ProgrammeDtoArgumentValueResolver($this->entityManager);
+        $this->security = $this->createMock(Security::class);
+        $this->roomRepository = $this->createMock(RoomRepository::class);
+        $this->programmeRepository = $this->createMock(ProgrammeRepository::class);
+        $this->programmeDtoArgumentValueResolver = new ProgrammeDtoArgumentValueResolver(
+            $this->security,
+            $this->roomRepository,
+            $this->programmeRepository
+        );
     }
 
     public function testProgrammeDtoArgumentValueResolver(): void

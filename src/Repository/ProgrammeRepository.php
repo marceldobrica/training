@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Entity\Programme;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -134,5 +135,62 @@ class ProgrammeRepository extends ServiceEntityRepository
                 ';
         $stmt = $conn->prepare($sql);
         return $stmt->executeQuery()->fetchAllAssociative();
+    }
+
+    public function isUserOcupiedAsTrainer(\DateTime $startDate, \DateTime $endDate, int $userId): array
+    {
+        $query = $this->_em
+            ->createQueryBuilder()
+            ->select('pt.id as trainerid, p.id as programmeid')
+            ->from('App:Programme', 'p')
+            ->join('p.trainer', 'pt')
+            ->where('p.startDate <= :startDate and :startDate < p.endDate')
+            ->orWhere('p.startDate < :endDate and :endDate <= p.endDate')
+            ->orWhere(':startDate  <= p.startDate and p.endDate <= :endDate')
+            ->andWhere('pt.id = :id')
+            ->setParameter(':startDate', $startDate)
+            ->setParameter(':endDate', $endDate)
+            ->setParameter(':id', $userId)
+            ->getQuery();
+
+        return $query->getArrayResult();
+    }
+
+    public function isUserOcupiedAsCustomer(\DateTime $startDate, \DateTime $endDate, int $userId): array
+    {
+        $query = $this->_em
+            ->createQueryBuilder()
+            ->select('pc.id as customerid, p.id as programmeid')
+            ->from('App:Programme', 'p')
+            ->join('p.customers', 'pc')
+            ->where('p.startDate <= :startDate and :startDate < p.endDate')
+            ->orWhere('p.startDate < :endDate and :endDate <= p.endDate')
+            ->orWhere(':startDate  <= p.startDate and p.endDate <= :endDate')
+            ->andWhere('pc.id = :id')
+            ->setParameter(':startDate', $startDate)
+            ->setParameter(':endDate', $endDate)
+            ->setParameter(':id', $userId)
+            ->getQuery();
+
+        return $query->getArrayResult();
+    }
+
+    public function isRoomOccupied(\DateTime $startDate, \DateTime $endDate, int $roomId): array
+    {
+        $query = $this->_em
+            ->createQueryBuilder()
+            ->select('pr.id as roomid, p.id as programmeid')
+            ->from('App:Programme', 'p')
+            ->join('p.room', 'pr')
+            ->where('p.startDate <= :startDate and :startDate < p.endDate')
+            ->orWhere('p.startDate < :endDate and :endDate <= p.endDate')
+            ->orWhere(':startDate  <= p.startDate and p.endDate <= :endDate')
+            ->andWhere('pr.id = :roomid')
+            ->setParameter(':startDate', $startDate)
+            ->setParameter(':endDate', $endDate)
+            ->setParameter(':roomid', $roomId)
+            ->getQuery();
+
+        return $query->getArrayResult();
     }
 }

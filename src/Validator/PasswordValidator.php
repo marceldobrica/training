@@ -2,9 +2,10 @@
 
 namespace App\Validator;
 
-use Symfony\Component\HttpFoundation\File\Exception\UnexpectedTypeException;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
+use Symfony\Component\Validator\Exception\UnexpectedTypeException;
+use Symfony\Component\Validator\Exception\UnexpectedValueException;
 
 class PasswordValidator extends ConstraintValidator
 {
@@ -14,8 +15,12 @@ class PasswordValidator extends ConstraintValidator
             throw new UnexpectedTypeException($constraint, Password::class);
         }
 
+        if (!is_string($value)) {
+            throw new UnexpectedValueException($value, 'string');
+        }
+
         if (
-            (!empty($value)) && ($value === trim($value)) && (strpos($value, ' ') === false) &&
+            (!empty($value)) && ($value === trim($value)) && (\strpos($value, ' ') === false) &&
             preg_match('/^(?=.*?[A-Z])(?=.*?[#?!@$%^&*-]).{8,}$/', $value, $matches)
         ) {
             return;

@@ -4,25 +4,24 @@ declare(strict_types=1);
 
 namespace App\Validator;
 
+use App\Entity\Programme;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 
-class DateTimeInFutureValidator extends ConstraintValidator
+class ProgrammeRoomOnlineValidator extends ConstraintValidator
 {
     public function validate($value, Constraint $constraint)
     {
-        if (!$value instanceof \DateTime) {
-            throw new UnexpectedTypeException($value, \DateTime::class);
+        if (!$value instanceof Programme) {
+            throw new UnexpectedTypeException($value, Programme::class);
         }
 
-        if (!$constraint instanceof DateTimeInFuture) {
-            throw new UnexpectedTypeException($constraint, DateTimeInFuture::class);
+        if (!$constraint instanceof ProgrammeRoomOnline) {
+            throw new UnexpectedTypeException($constraint, ProgrammeRoomOnline::class);
         }
 
-        if (
-            $value > new \DateTime()
-        ) {
+        if (is_null($value->getRoom()->getBuilding()) === $value->isOnline) {
             return;
         }
 

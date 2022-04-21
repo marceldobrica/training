@@ -33,8 +33,9 @@ class Building
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\Regex("/^[\p{Lu}].+/", message="The value should start with an uppercase letter.")
+     * @Assert\NotBlank()
      */
-    public string $address = 'Online';
+    public string $address = '';
 
     public function getId(): int
     {

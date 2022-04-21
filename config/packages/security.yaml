@@ -54,12 +54,15 @@ security:
     access_control:
         - { path: ^/admin/login, roles: PUBLIC_ACCESS }
         - { path: ^/admin, roles: ROLE_ADMIN }
-        - { path: ^/api/user, roles: PUBLIC_ACCESS }
+        - { path: ^/api/users, roles: PUBLIC_ACCESS }
         - { path: ^/api/login, roles: PUBLIC_ACCESS }
         - { path: ^/api/admin, roles: ROLE_ADMIN }
         - { path: ^/api/trainer, roles: ROLE_TRAINER }
-        - { path: ^/api, roles: ROLE_USER }
         - { path: ^/api/messages, roles: ROLE_ADMIN}
+        - { path: ^/api/buildings, roles: ROLE_ADMIN}
+        - { path: ^/api/rooms, roles: ROLE_ADMIN}
+        - { path: ^/api, roles: ROLE_USER }
+
 
 when@test:
     security:

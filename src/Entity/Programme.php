@@ -15,6 +15,12 @@ use App\Validator as MyAssert;
  * @ORM\Entity(repositoryClass=ProgrammeRepository::class)
  * @ORM\Table (name="programme")
  * @MyAssert\ProgrammeDateTimeDifference()
+ * @MyAssert\ProgrammeRoomOccupied()
+ * @MyAssert\ProgrammeRoomOnline()
+ * @MyAssert\ProgrammeRoomCapacities()
+ * @MyAssert\ProgrammeBuildingTime()
+ * @MyAssert\ProgrammeTrainerAvailable()
+ * @MyAssert\ProgrammeCustomerAvailable()
  */
 class Programme
 {
@@ -59,6 +65,7 @@ class Programme
     /**
      * @ORM\ManyToOne(targetEntity="User")
      * @ORM\JoinColumn(name="trainer_id", referencedColumnName="id", nullable=true)
+     * @MyAssert\IsTrainer()
      * @Groups ("api:programme:all")
      */
     private ?User $trainer;
