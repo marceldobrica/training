@@ -70,7 +70,41 @@ class ProgrammeController extends AbstractController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $programme = $form->getData();
-            $programme = $this->resolveProgramme($programme);
+            if (!is_null($programme->getTrainer())) {
+                if (
+                    !empty(
+                        $this->programmeRepository->isUserOcupiedAsTrainer(
+                            $programme->getStartDate(),
+                            $programme->getEndDate(),
+                            $programme->getTrainer()->getId()
+                        )
+                    ) ||
+                    !empty(
+                        $this->programmeRepository->isUserOcupiedAsCustomer(
+                            $programme->getStartDate(),
+                            $programme->getStartDate(),
+                            $programme->getTrainer()->getId()
+                        )
+                    )
+                ) {
+                    $programme->setTrainer(null);
+                    $this->addFlash(
+                        'warning',
+                        'The choosed trainer is already busy! We have set trainer to null!'
+                    );
+                }
+            }
+
+            if (is_null($programme->getRoom())) {
+                $programme->setRoom(
+                    $this->roomRepository->getRoomForProgramme(
+                        $programme->getStartDate(),
+                        $programme->getEndDate(),
+                        $programme->isOnline,
+                        $programme->maxParticipants
+                    )
+                );
+            }
 
             $this->entityManager->persist($programme);
             $this->entityManager->flush();
@@ -133,7 +167,6 @@ class ProgrammeController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var Programme */
             $programme = $form->getData();
-            $programme = $this->resolveProgramme($programme);
 
             $this->entityManager->persist($programme);
             $this->entityManager->flush();
@@ -148,45 +181,5 @@ class ProgrammeController extends AbstractController
         return $this->renderForm('admin/programme/form.html.twig', [
             'form' => $form,
         ]);
-    }
-
-    private function resolveProgramme(Programme $programme): Programme
-    {
-        if (!is_null($programme->getTrainer())) {
-            if (
-                !empty(
-                    $this->programmeRepository->isUserOcupiedAsTrainer(
-                        $programme->getStartDate(),
-                        $programme->getEndDate(),
-                        $programme->getTrainer()->getId()
-                    )
-                ) ||
-                !empty(
-                    $this->programmeRepository->isUserOcupiedAsCustomer(
-                        $programme->getStartDate(),
-                        $programme->getStartDate(),
-                        $programme->getTrainer()->getId()
-                    )
-                )
-            ) {
-                $programme->setTrainer(null);
-                $this->addFlash(
-                    'warning',
-                    'The choosed trainer is already busy! We have set trainer to null!'
-                );
-            }
-        }
-        if (is_null($programme->getRoom())) {
-            $programme->setRoom(
-                $this->roomRepository->getRoomForProgramme(
-                    $programme->getStartDate(),
-                    $programme->getEndDate(),
-                    $programme->isOnline,
-                    $programme->maxParticipants
-                )
-            );
-        }
-
-        return $programme;
     }
 }
