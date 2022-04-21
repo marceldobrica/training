@@ -10,7 +10,7 @@ use Symfony\Component\HttpClient\Exception\ClientException;
 
 class HttpClientSmsUserTest extends KernelTestCase
 {
-    private ?HttpClientSmsUser $client;
+    private HttpClientSmsUser $client;
 
     protected function runTest(): void
     {
