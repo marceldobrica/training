@@ -5,11 +5,13 @@ namespace App\Controller\Api;
 use App\Controller\Dto\ProgrammeDto;
 use App\Controller\ReturnValidationErrorsTrait;
 use App\Entity\Programme;
+use App\Entity\User;
 use App\Repository\ProgrammeRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
@@ -25,13 +27,17 @@ class ProgrammesController
 
     private ProgrammeRepository $programmeRepository;
 
+    private Security $security;
+
     public function __construct(
         ProgrammeRepository $programmeRepository,
         ValidatorInterface $validator,
+        Security $security,
         string $articlesOnPage
     ) {
         $this->programmeRepository = $programmeRepository;
         $this->validator = $validator;
+        $this->security = $security;
         $this->articlesOnPage = intval($articlesOnPage);
     }
 
@@ -74,5 +80,34 @@ class ProgrammesController
 
         return $this->programmeRepository
             ->showAllPaginatedSortedFiltered($pager, $filters, $sorter, $direction);
+    }
+
+    /**
+     * @Route(methods={"POST"}, path="/{id}/users", name="join_programme")
+     */
+    public function joinProgramme(int $id, Request $request): Response
+    {
+        $programme = $this->programmeRepository->findOneBy(['id' => $id]);
+        if (null === $programme) {
+
+            return new JsonResponse('Programme does not exist!', Response::HTTP_NOT_FOUND);
+        }
+        /** @var User */
+        $currentUser = $this->security->getUser();
+
+        if (null === $currentUser) {
+
+            return new JsonResponse('You have to be logged in!', Response::HTTP_UNAUTHORIZED);
+        }
+
+        $programme->addCustomer($currentUser);
+        $this->programmeRepository->add($programme);
+
+        $errors = $this->validator->validate($programme);
+        if (count($errors) > 0) {
+            return $this->returnValidationErrors($errors);
+        }
+
+        return new JsonResponse('Successfully joined programme: ' . (string) $programme, Response::HTTP_OK);
     }
 }
