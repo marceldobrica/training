@@ -4,12 +4,14 @@ namespace App\Controller\Admin;
 
 use App\Entity\Programme;
 use App\Entity\User;
+use App\Event\UserCreatedEvent;
 use App\Form\Type\DeleteCancelType;
 use App\Form\Type\UserModifyType;
 use App\Form\Type\UserType;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -28,16 +30,20 @@ class UsersController extends AbstractController
 
     private int $articlesOnPage;
 
+    private EventDispatcherInterface $dispatcher;
+
     public function __construct(
         UserRepository $userRepository,
         EntityManagerInterface $entityManager,
         UserPasswordHasherInterface $passwordHasher,
-        string $articlesOnPage
+        string $articlesOnPage,
+        EventDispatcherInterface $dispatcher
     ) {
         $this->userRepository = $userRepository;
         $this->entityManager = $entityManager;
         $this->passwordHasher = $passwordHasher;
         $this->articlesOnPage = intval($articlesOnPage);
+        $this->dispatcher = $dispatcher;
     }
 
     /**
@@ -76,6 +82,7 @@ class UsersController extends AbstractController
             $user->setPassword($this->passwordHasher->hashPassword($user, $user->getPassword()));
             $this->entityManager->persist($user);
             $this->entityManager->flush();
+            $this->dispatcher->dispatch(new UserCreatedEvent($user), UserCreatedEvent::NAME);
             $this->addFlash(
                 'success',
                 'You have created a new user!'

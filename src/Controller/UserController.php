@@ -4,10 +4,12 @@ namespace App\Controller;
 
 use App\Controller\Dto\UserDto;
 use App\Entity\User;
+use App\Event\UserCreatedEvent;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -32,22 +34,26 @@ class UserController implements LoggerAwareInterface
 
     private UserPasswordHasherInterface $passwordHasher;
 
+    private EventDispatcherInterface $dispatcher;
+
     public function __construct(
         EntityManagerInterface $entityManager,
         ValidatorInterface $validator,
         UserRepository $userRepository,
-        UserPasswordHasherInterface $passwordHasher
+        UserPasswordHasherInterface $passwordHasher,
+        EventDispatcherInterface $dispatcher
     ) {
         $this->entityManager = $entityManager;
         $this->validator = $validator;
         $this->userRepository = $userRepository;
         $this->passwordHasher = $passwordHasher;
+        $this->dispatcher = $dispatcher;
     }
 
     /**
      * @Route(methods={"POST"})
      */
-    public function register(UserDto $userDto): Response
+    public function registerAction(UserDto $userDto): Response
     {
         $errorsDto = $this->validator->validate($userDto);
         if (count($errorsDto) > 0) {
@@ -66,6 +72,7 @@ class UserController implements LoggerAwareInterface
         $this->entityManager->persist($user);
         $this->entityManager->flush();
         $this->entityManager->refresh($user);
+        $this->dispatcher->dispatch(new UserCreatedEvent($user), UserCreatedEvent::NAME);
 
         $this->logger->info('An user was registered and saved in DB');
         $savedUserDto = UserDto::createFromUser($user);
