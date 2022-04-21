@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Form\Type;
+namespace App\Tests\Unit\Form\Type;
 
 use App\Form\Type\DeleteCancelType;
 use PHPUnit\Framework\TestCase;

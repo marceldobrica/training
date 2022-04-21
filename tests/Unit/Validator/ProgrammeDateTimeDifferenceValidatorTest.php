@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Validator;
+namespace App\Tests\Unit\Validator;
 
 use App\Entity\Programme;
 use App\Validator\ProgrammeDateTimeDifference;
