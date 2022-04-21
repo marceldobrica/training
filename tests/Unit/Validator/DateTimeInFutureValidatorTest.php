@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Validator;
+namespace App\Tests\Unit\Validator;
 
 use App\Validator\DateTimeInFuture;
 use App\Validator\DateTimeInFutureValidator;
@@ -21,14 +21,14 @@ class DateTimeInFutureValidatorTest extends ConstraintValidatorTestCase
         return [
             [new \DateTime('now'), false],
             [new \DateTime('-1 day'), false],
-            [new \DateTime('+1 second'), true],
+            [new \DateTime('+1 day'), true],
         ];
     }
 
     /**
      * @dataProvider provideDateTime
      */
-    public function testDatesNotInPast(\DateTime $dateTime, bool $expectedValid): void
+    public function testDatesInFuture(\DateTime $dateTime, bool $expectedValid): void
     {
         $this->validator->validate($dateTime, new DateTimeInFuture());
         if ($expectedValid) {
