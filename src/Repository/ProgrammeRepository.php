@@ -141,7 +141,7 @@ class ProgrammeRepository extends ServiceEntityRepository
     {
         $query = $this->_em
             ->createQueryBuilder()
-            ->select('pt.id')
+            ->select('pt.id as trainerid, p.id as programmeid')
             ->from('App:Programme', 'p')
             ->join('p.trainer', 'pt')
             ->where('p.startDate <= :startDate and :startDate < p.endDate')
@@ -160,7 +160,7 @@ class ProgrammeRepository extends ServiceEntityRepository
     {
         $query = $this->_em
             ->createQueryBuilder()
-            ->select('pc.id')
+            ->select('pc.id as customerid, p.id as programmeid')
             ->from('App:Programme', 'p')
             ->join('p.customers', 'pc')
             ->where('p.startDate <= :startDate and :startDate < p.endDate')
