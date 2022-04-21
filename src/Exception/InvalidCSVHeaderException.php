@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Command;
+namespace App\Exception;
 
 class InvalidCSVHeaderException extends \Exception
 {

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Builders;
 
-use App\Command\NotAbleToAssignRoomException;
 use App\Entity\Programme;
+use App\Exception\NotAbleToAssignRoomException;
 use App\Repository\RoomRepository;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
