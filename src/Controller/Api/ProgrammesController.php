@@ -89,20 +89,15 @@ class ProgrammesController
     {
         $programme = $this->programmeRepository->findOneBy(['id' => $id]);
         if (null === $programme) {
-
             return new JsonResponse('Programme does not exist!', Response::HTTP_NOT_FOUND);
         }
         /** @var User */
         $currentUser = $this->security->getUser();
-
         if (null === $currentUser) {
-
             return new JsonResponse('You have to be logged in!', Response::HTTP_UNAUTHORIZED);
         }
-
         $programme->addCustomer($currentUser);
         $this->programmeRepository->add($programme);
-
         $errors = $this->validator->validate($programme);
         if (count($errors) > 0) {
             return $this->returnValidationErrors($errors);
