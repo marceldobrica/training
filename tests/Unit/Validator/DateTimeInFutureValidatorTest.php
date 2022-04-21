@@ -21,7 +21,7 @@ class DateTimeInFutureValidatorTest extends ConstraintValidatorTestCase
         return [
             [new \DateTime('now'), false],
             [new \DateTime('-1 day'), false],
-            [new \DateTime('+5 seconds'), true],
+            [new \DateTime('+1 day'), true],
         ];
     }
 
