@@ -35,22 +35,26 @@ class ProgrammeCustomerAvailableValidator extends ConstraintValidator
                 $value->getEndDate(),
                 $customer->getId()
             );
-
             $resultCustomer = $this->programmeRepository->isUserOcupiedAsCustomer(
                 $value->getStartDate(),
                 $value->getEndDate(),
                 $customer->getId()
             );
+            if (!empty($resultTrainer)) {
+                $this->context->buildViolation($constraint->message)->addViolation();
 
-            if (
-                (count($resultCustomer) == 1 && $resultCustomer[0]['programmeid'] === $value->getId()) ||
-                empty($resultCustomer) &&
-                empty($resultTrainer)
-            ) {
+                return;
+            }
+            if (count($resultCustomer) > 1) {
+                $this->context->buildViolation($constraint->message)->addViolation();
+
+                return;
+            }
+            if (count($resultCustomer) == 1 && $resultCustomer[0]['programmeid'] !== $value->getId()) {
+                $this->context->buildViolation($constraint->message)->addViolation();
+
                 return;
             }
         }
-
-        $this->context->buildViolation($constraint->message)->addViolation();
     }
 }
