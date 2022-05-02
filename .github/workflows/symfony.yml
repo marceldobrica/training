@@ -9,6 +9,14 @@ on:
 jobs:
   symfony-tests:
     runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
     steps:
     #  To automatically get bug fixes and new Php versions for shivammathur/setup-php,
     # change this to (see https://github.com/shivammathur/setup-php#bookmark-versioning):
@@ -31,11 +39,10 @@ jobs:
       run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
     - name: Create Database
       run: |
-        mkdir -p data
-        touch data/database.sqlite
+        bin/console d:d:c -y
+        bin/console d:m:m -y
+        bin/console d:f:load -y
     - name: Execute tests (Unit and Feature tests) via PHPUnit
-      env:
-        DATABASE_URL: sqlite:///%kernel.project_dir%/data/database.sqlite
       run: vendor/bin/phpunit
     - name: Execute CodeSniffer tests
       run: vendor/bin/phpcs --standard=PSR12 --ignore=tests/bootstrap.php src tests
