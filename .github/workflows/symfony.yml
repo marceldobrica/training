@@ -50,10 +50,16 @@ jobs:
       run: vendor/bin/phpcs --standard=PSR12 --ignore=tests/bootstrap.php src tests
     - name: Execute PhpStan tests
       run: vendor/bin/phpstan analyse src tests
-    - name: Coverage check
-      uses: devmasx/coverage-check-action@v1.2.0
-      with:
-        type: lcov
-        result_path: coverage/example.lcov
-        min_coverage: 2
-        token: ${{ github.token }}
+  - name: Coverage check
+    # You may pin to the exact commit or the version.
+    # uses: devmasx/coverage-check-action@4a754f8957c6824e0a0d44bf9168fdbdf47e7e2f
+    uses: devmasx/coverage-check-action@v1.2.0
+    with:
+      # lcov | simplecov
+      type: # default is lcov
+      # Github token for create checks
+      token:
+      # Minimum coverage
+      min_coverage: # optional, default is 80
+      # Json with coverage result
+      result_path:
