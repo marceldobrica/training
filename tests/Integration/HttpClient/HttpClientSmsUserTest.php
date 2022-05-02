@@ -12,11 +12,6 @@ class HttpClientSmsUserTest extends KernelTestCase
 {
     private HttpClientSmsUser $client;
 
-    protected function runTest(): void
-    {
-        $this->markTestSkipped('Skipped test for GitHub Actions');
-    }
-
     protected function setup(): void
     {
         parent::setUp();
