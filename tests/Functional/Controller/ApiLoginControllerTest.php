@@ -20,7 +20,7 @@ class ApiLoginControllerTest extends WebTestCase
             "email" => "marceldobrica66@gmail.com",
             "password" => "Mi5@sua1"
         ];
-        $crawler = $client->jsonRequest('POST', 'http://internship.local/api/login', $body);
+        $crawler = $client->jsonRequest('POST', 'http://localhost/api/login', $body);
 
         $this->assertResponseIsSuccessful();
         $decodedContent = \json_decode($client->getResponse()->getContent(), true);
@@ -34,7 +34,7 @@ class ApiLoginControllerTest extends WebTestCase
         $this->assertResponseIsSuccessful();
         $this->assertEquals($body['email'], $emailResponse);
 
-        $client->request('DELETE', 'http://internship-project.local/api/users/delete/1', [], [], [
+        $client->request('DELETE', 'http://internship.local/api/users/delete/1', [], [], [
             'HTTP_X-AUTH-TOKEN' => $token,
             'HTTP_ACCEPT' => 'application/json',
         ]);
