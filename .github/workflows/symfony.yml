@@ -56,4 +56,4 @@ jobs:
         type: lcov
         token:
         min_coverage:
-        result_path:
+        result_path: coverage/example.lcov
