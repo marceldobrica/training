@@ -41,9 +41,9 @@ jobs:
       env:
         DATABASE_URL: mysql://root:root@127.0.0.1:3306/testing?serverVersion=8.0&charset=utf8mb4
       run: |
-        bin/console d:d:c -y
-        bin/console d:m:m -y
-        bin/console d:f:load -y
+        bin/console --env=test d:d:c --no-interaction
+        bin/console --env=test d:m:m --no-interaction
+        bin/console --env=test d:f:load --no-interaction
     - name: Execute tests (Unit and Feature tests) via PHPUnit
       run: vendor/bin/phpunit
     - name: Execute CodeSniffer tests
