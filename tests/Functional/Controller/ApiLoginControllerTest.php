@@ -8,11 +8,6 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class ApiLoginControllerTest extends WebTestCase
 {
-    protected function runTest(): void
-    {
-        $this->markTestSkipped('Skipped test for GitHub Actions');
-    }
-
     public function testLogin(): void
     {
         $client = static::createClient();
@@ -20,7 +15,7 @@ class ApiLoginControllerTest extends WebTestCase
             "email" => "marceldobrica66@gmail.com",
             "password" => "Mi5@sua1"
         ];
-        $crawler = $client->jsonRequest('POST', 'http://localhost/api/login', $body);
+        $crawler = $client->jsonRequest('POST', 'http://internship.local/api/login', $body);
 
         $this->assertResponseIsSuccessful();
         $decodedContent = \json_decode($client->getResponse()->getContent(), true);
