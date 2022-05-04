@@ -66,8 +66,14 @@ jobs:
         bin/console --env=test d:m:m --no-interaction
         bin/console --env=test d:f:load --no-interaction
     - name: Execute tests (Unit and Feature tests) via PHPUnit
-      run: vendor/bin/phpunit
+      run: vendor/bin/phpunit --coverage-clover ./coverage.xml
     - name: Execute CodeSniffer tests
       run: vendor/bin/phpcs --standard=PSR12 --ignore=tests/bootstrap.php src tests
     - name: Execute PhpStan tests
       run: vendor/bin/phpstan analyse src tests
+    - name: Check test coverage
+      id: test-coverage
+      uses: johanvanhelden/gha-clover-test-coverage-check@v1
+      with:
+        percentage: "5"
+        filename: "coverage.xml"
