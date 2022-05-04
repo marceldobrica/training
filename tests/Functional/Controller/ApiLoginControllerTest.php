@@ -15,23 +15,23 @@ class ApiLoginControllerTest extends WebTestCase
             "email" => "marceldobrica66@gmail.com",
             "password" => "Mi5@sua1"
         ];
-        $crawler = $client->Request('GET', 'http://internship.local/admin/login');
+        $crawler = $client->jsonRequest('POST', 'http://internship.local/api/login', $body);
 
         $this->assertResponseIsSuccessful();
-//        $decodedContent = \json_decode($client->getResponse()->getContent(), true);
-//        $token = $decodedContent['token'];
-//        $emailResponse = $decodedContent['user'];
-//
-//        $crawler = $client->request('GET', 'http://internship.local/api/programme', [], [], [
-//            'HTTP_X-AUTH-TOKEN' => $token,
-//            'HTTP_ACCEPT' => 'application/json'
-//        ]);
-//        $this->assertResponseIsSuccessful();
-//        $this->assertEquals($body['email'], $emailResponse);
-//
-//        $client->request('DELETE', 'http://internship.local/api/users/delete/1', [], [], [
-//            'HTTP_X-AUTH-TOKEN' => $token,
-//            'HTTP_ACCEPT' => 'application/json',
-//        ]);
+        $decodedContent = \json_decode($client->getResponse()->getContent(), true);
+        $token = $decodedContent['token'];
+        $emailResponse = $decodedContent['user'];
+
+        $crawler = $client->request('GET', 'http://internship.local/api/programme', [], [], [
+            'HTTP_X-AUTH-TOKEN' => $token,
+            'HTTP_ACCEPT' => 'application/json'
+        ]);
+        $this->assertResponseIsSuccessful();
+        $this->assertEquals($body['email'], $emailResponse);
+
+        $client->request('DELETE', 'http://internship.local/api/users/delete/1', [], [], [
+            'HTTP_X-AUTH-TOKEN' => $token,
+            'HTTP_ACCEPT' => 'application/json',
+        ]);
     }
 }
