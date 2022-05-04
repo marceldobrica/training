@@ -9,10 +9,21 @@ on:
 jobs:
   symfony-tests:
     runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+      web:
+        image: nginx
+        ports:
+          - "80:80"
+        env:
+          NGINX_HOST: internship.local
     steps:
-    #  To automatically get bug fixes and new Php versions for shivammathur/setup-php,
-    # change this to (see https://github.com/shivammathur/setup-php#bookmark-versioning):
-    # uses: shivammathur/setup-php@v2
     - uses: shivammathur/setup-php@v2
       with:
         php-version: '7.4'
@@ -29,13 +40,32 @@ jobs:
           ${{ runner.os }}-php-
     - name: Install Dependencies
       run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+    - name: Cache node_modules
+      uses: actions/cache@v1
+      id: yarn-cache-node-modules
+      with:
+        path: node_modules
+        key: ${{ runner.os }}-yarn-cache-node-modules-${{ hashFiles('**/yarn.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-yarn-cache-node-modules-
+    - name: Yarn install
+      if: steps.yarn-cache-node-modules.outputs.cache-hit != 'true'
+      run: yarn install
+    - name: Yarn build
+      run: yarn run encore production
+    - name: Archive production artifacts
+      uses: actions/upload-artifact@v1
+      with:
+        name: build
+        path: public/build
     - name: Create Database
-      run: |
-        mkdir -p data
-        touch data/database.sqlite
-    - name: Execute tests (Unit and Feature tests) via PHPUnit
       env:
-        DATABASE_URL: sqlite:///%kernel.project_dir%/data/database.sqlite
+        DATABASE_URL: mysql://root:root@127.0.0.1:3306/testing?serverVersion=8.0&charset=utf8mb4
+      run: |
+        bin/console --env=test d:d:c --no-interaction
+        bin/console --env=test d:m:m --no-interaction
+        bin/console --env=test d:f:load --no-interaction
+    - name: Execute tests (Unit and Feature tests) via PHPUnit
       run: vendor/bin/phpunit
     - name: Execute CodeSniffer tests
       run: vendor/bin/phpcs --standard=PSR12 --ignore=tests/bootstrap.php src tests
