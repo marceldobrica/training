@@ -58,10 +58,6 @@ jobs:
       with:
         name: build
         path: public/build
-    - name: Check the Symfony console
-      run: |
-        php bin/console -V
-        php bin/console about
     - name: Create Database
       env:
         DATABASE_URL: mysql://root:root@127.0.0.1:3306/testing?serverVersion=8.0&charset=utf8mb4
@@ -69,6 +65,10 @@ jobs:
         bin/console --env=test d:d:c --no-interaction
         bin/console --env=test d:m:m --no-interaction
         bin/console --env=test d:f:load --no-interaction
+    - name: Check the Symfony console
+      run: |
+        php bin/console -V
+        php bin/console about
     - name: Execute tests (Unit and Feature tests) via PHPUnit
       run: vendor/bin/phpunit
     - name: Execute CodeSniffer tests
