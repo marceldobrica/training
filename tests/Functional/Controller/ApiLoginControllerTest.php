@@ -22,7 +22,7 @@ class ApiLoginControllerTest extends WebTestCase
         $token = $decodedContent['token'];
         $emailResponse = $decodedContent['user'];
 
-        $crawler = $client->request('GET', 'http://internship.local/api/programme', [], [], [
+        $crawler = $client->request('GET', 'http://internship.local/api/programmes', [], [], [
             'HTTP_X-AUTH-TOKEN' => $token,
             'HTTP_ACCEPT' => 'application/json'
         ]);
