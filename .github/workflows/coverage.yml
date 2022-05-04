@@ -8,12 +8,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Install dependencies
-        run: composer install --prefer-dist --no-progress --no-suggest
-      - name: Run test suite
-        run: make test
-      - name: Coverage update
-        uses: OpenClassrooms/coverage-checker@v1.0.0
+      - uses: devmasx/coverage-check-action@v1.0.0
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          action: update
+          result_path: coverage/.last_run.json
+          token: ${{secrets.GITHUB_TOKEN}}
+          type: simplecov
+          min_coverage: 90
