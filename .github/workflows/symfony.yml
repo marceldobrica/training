@@ -71,10 +71,3 @@ jobs:
       run: vendor/bin/phpcs --standard=PSR12 --ignore=tests/bootstrap.php src tests
     - name: Execute PhpStan tests
       run: vendor/bin/phpstan analyse src tests
-    - name: Coverage check
-      uses: devmasx/coverage-check-action@v1.0.0
-      with:
-        result_path: coverage/.last_run.json
-        token: ${{secrets.GITHUB_TOKEN}}
-        type: simplecov
-        min_coverage: 2
