@@ -72,7 +72,7 @@ jobs:
     - name: Execute PhpStan tests
       run: vendor/bin/phpstan analyse src tests
     - name: Coverage check
-      uses: devmasx/coverage-check-action@v1.2.0
+      uses: OpenClassrooms/coverage-checker@v1.0.0
       with:
-        type: lcov
-        result_path: coverage/example.lcov
+        token: ${{ secrets.GITHUB_TOKEN }}
+        action: check
