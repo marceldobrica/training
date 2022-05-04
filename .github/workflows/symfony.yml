@@ -77,4 +77,4 @@ jobs:
         type: lcov
         result_path: coverage/example.lcov
         min_coverage: 90
-        token: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ github.token }}
