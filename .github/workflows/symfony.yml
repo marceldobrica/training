@@ -65,10 +65,6 @@ jobs:
         bin/console --env=test d:d:c --no-interaction
         bin/console --env=test d:m:m --no-interaction
         bin/console --env=test d:f:load --no-interaction
-    - name: Check the Symfony console
-      run: |
-        php bin/console -V
-        php bin/console about
     - name: Execute tests (Unit and Feature tests) via PHPUnit
       run: vendor/bin/phpunit
     - name: Execute CodeSniffer tests
