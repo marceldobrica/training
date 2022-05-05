@@ -36,12 +36,14 @@ class SmsMailMessengerController extends AbstractController
             $mailMessage = 'Look! I created a message to be dispatched by mail!';
 
             $this->sendMailNotification->sendMailNotification($mailMessage, $user->email);
-            $bus->dispatch(
-                new SmsNotification(
-                    'Look! I created a message to be dispatched by sms!',
-                    $user->getPhone()
-                )
-            );
+            if (null !== $user->getPhone() && strlen($user->getPhone()) > 5 ) {
+                $bus->dispatch(
+                    new SmsNotification(
+                        'Look! I created a message to be dispatched by sms!',
+                        $user->getPhone()
+                    )
+                );
+            }
         }
 
         return new JsonResponse(
