@@ -26,6 +26,7 @@ class AnalyticsLogParser
             while (!feof($f)) {
                 $line = fgets($f);
                 if ($line) {
+
                     yield $line;
                 }
             }
