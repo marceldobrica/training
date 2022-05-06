@@ -26,9 +26,7 @@ class SmsMailMessengerController extends AbstractController
         $this->sendMailNotification = $sendMailNotification;
     }
 
-    /**
-     * @Route ("/api/messages", name="app_messages_mail_sms", methods={"POST"})
-     */
+    #[Route('/api/messages', name: 'app_messages_mail_sms', methods: ['POST'])]
     public function sendSmsMailAction(MessageBusInterface $bus): Response
     {
         $users = $this->userRepository->findAll();
