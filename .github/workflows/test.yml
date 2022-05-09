@@ -8,6 +8,13 @@ jobs:
   symfony-tests:
     runs-on: ubuntu-latest
     services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
       web:
         image: nginx
         ports:
@@ -42,10 +49,6 @@ jobs:
       with:
         name: build
         path: public/build
-    - name: Create Database for test
-      uses: jordiprats/mysql-action@1.1
-      with:
-        mysql root password: root
     - name: Verify MySQL connection
       run: |
         mysql --version
@@ -54,6 +57,7 @@ jobs:
       env:
         DATABASE_URL: mysql://root:root@127.0.0.1:3306/testing?serverVersion=8.0&charset=utf8mb4
       run: |
+        bin/console --env=test d:d:c --no-interaction
         bin/console --env=test d:m:m --no-interaction
         bin/console --env=test d:f:load --no-interaction
     - name: Execute tests (Unit and Feature tests) via PHPUnit
