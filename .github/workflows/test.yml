@@ -43,9 +43,8 @@ jobs:
         name: build
         path: public/build
     - name: Create Database for test
-      uses: mirromutth/mysql-action@v1.1
+      uses: jordiprats/mysql-action@1.1
       with:
-        mysql database: 'testing_test'
         mysql root password: root
     - name: Verify MySQL connection
       run: |
