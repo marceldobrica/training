@@ -45,8 +45,8 @@ jobs:
     - name: Create Database for test
       uses: samin/mysql-action@v1
       with:
-        mysql database: 'testing_test'
-        mysql root password: root
+        MYSQL_DATABASE: 'testing_test'
+        MYSQL_ROOT_PASSWORD: root
     - name: Migrations and load fixtures to database
       env:
         DATABASE_URL: mysql://root:root@127.0.0.1:3306/testing?serverVersion=8.0&charset=utf8mb4
