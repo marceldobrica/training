@@ -1,0 +1,12 @@
+name: Try Log Secrets
+
+on:
+  workflow_dispatch:
+
+jobs:
+  log:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: log the secret
+        run: echo ${{ secrets.MY_SECRET }}
