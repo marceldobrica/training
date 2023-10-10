@@ -21,4 +21,3 @@ Forgot password
 We will expand on each functionality mentioned above (and more) throughout the internship. The information here is just a glimpse of what we will be focusing on.
 
 Let’s go!
-Test
